@@ -1,16 +1,23 @@
 import { createClient } from '@supabase/supabase-js';
 
-const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
-const supabaseUrl = isLocal ? import.meta.env.VITE_SUPABASE_URL : (window.location.origin + '/supabase-proxy');
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const getSupabaseConfig = () => {
+    if (typeof window === 'undefined') return { url: '', key: '' };
 
-if (!supabaseUrl || !supabaseKey) {
-    console.group('❌ CONFIGURAÇÃO SUPABASE AUSENTE');
-    console.error('As variáveis VITE_SUPABASE_URL ou VITE_SUPABASE_ANON_KEY não foram encontradas.');
-    console.groupEnd();
-}
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const baseUrl = import.meta.env.VITE_SUPABASE_URL || '';
+    const key = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
-export const supabase = createClient(supabaseUrl || '', supabaseKey || '');
+    // Se estiver em produção e não houver proxy, tenta direto se o proxy falhar
+    const prodUrl = window.location.origin + '/supabase-proxy';
+
+    return {
+        url: isLocal ? baseUrl : prodUrl,
+        key: key
+    };
+};
+
+const config = getSupabaseConfig();
+export const supabase = createClient(config.url, config.key);
 
 export interface Teacher {
     id: string;

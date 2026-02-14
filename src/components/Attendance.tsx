@@ -14,6 +14,7 @@ interface Props {
 // Removendo atribuições fictícias para garantir uso dos dados de 2026
 
 const Attendance = ({ teacher, onLogout }: Props) => {
+    console.log('--- Attendance Component v4.3.5 Loaded ---');
     const [disciplines, setDisciplines] = useState<Discipline[]>([]);
     const [selectedDiscipline, setSelectedDiscipline] = useState<Discipline | null>(null);
     const [selectedClass, setSelectedClass] = useState<string>('');
@@ -344,8 +345,7 @@ const Attendance = ({ teacher, onLogout }: Props) => {
                             height: '60px',
                             alignItems: 'center'
                         }}>
-                            <motion.button
-                                whileTap={{ scale: 0.95 }}
+                            <button
                                 onClick={handleBack}
                                 style={{
                                     border: 'none',
@@ -365,7 +365,7 @@ const Attendance = ({ teacher, onLogout }: Props) => {
                                 }}
                             >
                                 <ArrowLeft size={20} strokeWidth={3} /> VOLTAR
-                            </motion.button>
+                            </button>
                         </div>
 
                         <div className="glass-card" style={{
