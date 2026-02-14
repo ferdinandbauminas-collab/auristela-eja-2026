@@ -336,6 +336,34 @@ const Attendance = ({ teacher, onLogout }: Props) => {
                         exit={{ opacity: 0, x: -100 }}
                         style={{ flex: 1, display: 'flex', flexDirection: 'column' }}
                     >
+                        {/* Área Superior Fora do Card */}
+                        <div style={{
+                            display: 'flex',
+                            justifyContent: 'flex-end',
+                            padding: '10px 0',
+                            height: '60px',
+                            alignItems: 'center'
+                        }}>
+                            <button
+                                onClick={handleBack}
+                                style={{
+                                    border: 'none',
+                                    background: 'rgba(239, 68, 68, 0.1)',
+                                    color: '#ef4444',
+                                    width: '44px',
+                                    height: '44px',
+                                    borderRadius: '14px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    cursor: 'pointer',
+                                    boxShadow: '0 4px 12px rgba(239, 68, 68, 0.1)'
+                                }}
+                            >
+                                <ArrowLeft size={24} />
+                            </button>
+                        </div>
+
                         <div className="glass-card" style={{
                             flex: 1,
                             display: 'flex',
@@ -344,34 +372,15 @@ const Attendance = ({ teacher, onLogout }: Props) => {
                             alignItems: 'center',
                             justifyContent: 'flex-start',
                             position: 'relative',
-                            minHeight: 'calc(100vh - 120px)',
+                            minHeight: 'calc(100vh - 180px)', // Ajustado para o novo espaço
                             overflow: 'hidden'
                         }}>
-                            {/* Botão Retornar */}
-                            <button
-                                onClick={handleBack}
-                                style={{
-                                    position: 'absolute',
-                                    top: '20px',
-                                    right: '20px',
-                                    border: 'none',
-                                    background: 'rgba(0,0,0,0.03)',
-                                    color: '#64748b',
-                                    width: '40px',
-                                    height: '40px',
-                                    borderRadius: '12px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    cursor: 'pointer',
-                                    zIndex: 10
-                                }}
-                            >
-                                <ArrowLeft size={20} />
-                            </button>
-
                             {/* Título da Turma em Destaque no Topo */}
-                            <div style={{ width: '100%', textAlign: 'center', marginBottom: '16px', paddingTop: '60px' }}>
+                            <div style={{
+                                width: '100%',
+                                textAlign: 'center',
+                                marginBottom: '16px'
+                            }}>
                                 <p style={{
                                     color: '#94a3b8',
                                     fontWeight: 900,
