@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import type { Teacher, Student, Discipline, AttendanceRecord } from '../lib/supabase';
-import { Check, X, Send, LogOut, Users, BookOpen, Calendar as CalendarIcon, ChevronRight } from 'lucide-react';
+import { Check, X, Send, LogOut, Users, BookOpen, Calendar as CalendarIcon, ChevronRight, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import CustomSelect from './CustomSelect';
 
@@ -82,6 +82,12 @@ const Attendance = ({ teacher, onLogout }: Props) => {
         } else {
             alert('Falha ao salvar: ' + error.message);
         }
+    };
+
+    const handleBack = () => {
+        setIsWizardMode(false);
+        setCurrentStudentIndex(0);
+        setAttendance({});
     };
 
     const handleMark = (status: 'present' | 'absent') => {
@@ -341,6 +347,29 @@ const Attendance = ({ teacher, onLogout }: Props) => {
                             minHeight: 'calc(100vh - 120px)',
                             overflow: 'hidden'
                         }}>
+                            {/* Botão Retornar */}
+                            <button
+                                onClick={handleBack}
+                                style={{
+                                    position: 'absolute',
+                                    top: '20px',
+                                    left: '20px',
+                                    border: 'none',
+                                    background: 'rgba(0,0,0,0.03)',
+                                    color: '#64748b',
+                                    width: '40px',
+                                    height: '40px',
+                                    borderRadius: '12px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    cursor: 'pointer',
+                                    zIndex: 10
+                                }}
+                            >
+                                <ArrowLeft size={20} />
+                            </button>
+
                             {/* Título da Turma em Destaque no Topo */}
                             <div style={{ width: '100%', textAlign: 'center', marginBottom: '16px' }}>
                                 <p style={{
