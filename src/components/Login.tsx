@@ -30,7 +30,9 @@ const Login = ({ onLogin }: Props) => {
                 }
             } catch (err: any) {
                 console.error('Erro ao buscar professores:', err);
-                setErrorMsg(`Erro: ${err.message || 'Falha na conexão'} (Código: ${err.code || 'Desconhecido'})`);
+                const urlHint = import.meta.env.VITE_SUPABASE_URL ? `URL: OK (${import.meta.env.VITE_SUPABASE_URL.substring(0, 12)}...)` : 'URL: AUSENTE';
+                const keyHint = import.meta.env.VITE_SUPABASE_ANON_KEY ? `KEY: OK` : 'KEY: AUSENTE';
+                setErrorMsg(`${err.message || 'Falha na conexão'}\n[${urlHint} | ${keyHint}]`);
             } finally {
                 setLoading(false);
             }
