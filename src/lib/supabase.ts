@@ -1,12 +1,12 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+const supabaseUrl = isLocal ? import.meta.env.VITE_SUPABASE_URL : (window.location.origin + '/supabase-proxy');
 const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseKey) {
     console.group('❌ CONFIGURAÇÃO SUPABASE AUSENTE');
     console.error('As variáveis VITE_SUPABASE_URL ou VITE_SUPABASE_ANON_KEY não foram encontradas.');
-    console.error('Verifique o arquivo .env na raiz do projeto.');
     console.groupEnd();
 }
 

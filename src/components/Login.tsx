@@ -156,7 +156,7 @@ const Login = ({ onLogin }: Props) => {
                 display: 'flex', justifyContent: 'center', gap: '20px',
                 fontSize: '0.65rem', color: '#94a3b8', fontWeight: 700
             }}>
-                <span>VERSÃO v3.0.3</span>
+                <span>VERSÃO v4.0.0</span>
                 <span
                     onClick={() => {
                         localStorage.clear();
