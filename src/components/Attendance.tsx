@@ -334,19 +334,52 @@ const Attendance = ({ teacher, onLogout }: Props) => {
                             flex: 1,
                             display: 'flex',
                             flexDirection: 'column',
-                            padding: '20px',
+                            padding: '24px',
                             alignItems: 'center',
-                            justifyContent: 'space-between',
+                            justifyContent: 'flex-start',
                             position: 'relative',
-                            minHeight: 'calc(100vh - 120px)' // Garante que o card ocupe o máximo de altura
+                            minHeight: 'calc(100vh - 120px)',
+                            overflow: 'hidden'
                         }}>
-                            {/* Student Info Container - Centered in the middle space */}
+                            {/* Barra de Progresso FixA (Fora do AnimatePresence) */}
+                            <div style={{
+                                width: '100%',
+                                height: '8px',
+                                background: 'rgba(99, 102, 241, 0.1)',
+                                borderRadius: '4px',
+                                marginBottom: '40px',
+                                overflow: 'visible',
+                                position: 'relative'
+                            }}>
+                                <motion.div
+                                    animate={{ width: `${((currentStudentIndex + 1) / students.length) * 100}%` }}
+                                    transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                                    style={{
+                                        height: '100%',
+                                        background: '#6366f1',
+                                        borderRadius: '4px',
+                                        boxShadow: '0 0 15px rgba(99, 102, 241, 0.3)'
+                                    }}
+                                />
+                                <div style={{
+                                    position: 'absolute',
+                                    right: 0,
+                                    top: '-20px',
+                                    fontSize: '0.75rem',
+                                    fontWeight: 900,
+                                    color: '#6366f1'
+                                }}>
+                                    {currentStudentIndex + 1} / {students.length}
+                                </div>
+                            </div>
+
+                            {/* Student Info Container */}
                             <AnimatePresence mode="wait">
                                 <motion.div
                                     key={currentStudent?.id}
-                                    initial={{ opacity: 0, scale: 0.9, y: 10 }}
-                                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                                    exit={{ opacity: 0, scale: 1.1, y: -10 }}
+                                    initial={{ opacity: 0, x: 20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    exit={{ opacity: 0, x: -20 }}
                                     style={{
                                         textAlign: 'center',
                                         flex: 1,
