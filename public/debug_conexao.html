@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Diagnóstico Supabase - EJA 2026</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+            line-height: 1.5;
+            background: #f4f7f6;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .status {
+            font-weight: bold;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        pre {
+            background: #eee;
+            padding: 10px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+
+        button {
+            padding: 10px 20px;
+            cursor: pointer;
+            background: #059669;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <h1>🔍 Diagnóstico de Conexão</h1>
+        <p>Este teste tenta buscar os dados diretamente do Supabase via navegador.</p>
+
+        <div id="result" class="status">Aguardando início...</div>
+
+        <button onclick="testar()">TESTAR CONEXÃO AGORA</button>
+
+        <h3>Detalhes Técnicos:</h3>
+        <pre id="details">Clique no botão para iniciar os testes.</pre>
+    </div>
+
+    <script>
+        const URL = 'https://yglwswpgrqfldvpbqxcl.supabase.co/rest/v1/teachers?select=*';
+        const KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlnbHdzd3BncnFmbGR2cGJxeGNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTU2Mjg0MDQsImV4cCI6MjAzMTIwNDQwNH0.5N_u6Y-0iG2s1s024s2yNCe-iZ0rnF3xKq6H3kTl3rU';
+
+        async function testar() {
+            const resDiv = document.getElementById('result');
+            const detDiv = document.getElementById('details');
+
+            resDiv.className = 'status';
+            resDiv.innerText = '⏳ Testando...';
+            detDiv.innerText = 'Enviando requisição para: ' + URL;
+
+            try {
+                const response = await fetch(URL, {
+                    headers: {
+                        'apikey': KEY,
+                        'Authorization': 'Bearer ' + KEY
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    resDiv.className = 'status success';
+                    resDiv.innerText = '✅ CONEXÃO OK! ' + data.length + ' professores encontrados.';
+                    detDiv.innerText = JSON.stringify(data.slice(0, 3), null, 2);
+
+                    if (data.length === 0) {
+                        resDiv.className = 'status error';
+                        resDiv.innerText = '⚠️ CONECTADO, MAS BANCO VAZIO!';
+                        detDiv.innerText = 'A conexão funcionou, mas a tabela "teachers" não retornou nenhum dado. Verifique se o script SQL foi executado corretamente.';
+                    }
+                } else {
+                    const errorTxt = await response.text();
+                    resDiv.className = 'status error';
+                    resDiv.innerText = '❌ ERRO NA REQUISIÇÃO: ' + response.status;
+                    detDiv.innerText = errorTxt;
+                }
+            } catch (err) {
+                resDiv.className = 'status error';
+                resDiv.innerText = '❌ FALHA TOTAL (Rede ou Bloqueio)';
+                detDiv.innerText = err.message + '\n\nIsso geralmente acontece quando:\n1. Não há internet.\n2. O domínio está bloqueado na rede.\n3. Erro de CORS (RLS ainda ativo no Supabase).';
+            }
+        }
+    </script>
+</body>
+
+</html>
