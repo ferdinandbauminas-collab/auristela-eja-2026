@@ -150,9 +150,22 @@ const Login = ({ onLogin }: Props) => {
                 />
             </AnimatePresence>
 
-            {/* Versão para controle de cache */}
-            <div style={{ position: 'fixed', bottom: '10px', right: '10px', fontSize: '0.6rem', color: '#cbd5e1', fontWeight: 600 }}>
-                VERSÃO v3.0.1
+            {/* Versão e Limpeza de Cache */}
+            <div style={{
+                position: 'fixed', bottom: '10px', width: '100%',
+                display: 'flex', justifyContent: 'center', gap: '20px',
+                fontSize: '0.65rem', color: '#94a3b8', fontWeight: 700
+            }}>
+                <span>VERSÃO v3.0.3</span>
+                <span
+                    onClick={() => {
+                        localStorage.clear();
+                        window.location.reload();
+                    }}
+                    style={{ color: '#059669', cursor: 'pointer', textDecoration: 'underline' }}
+                >
+                    LIMPAR MEMÓRIA (CACHE)
+                </span>
             </div>
         </div>
     );
