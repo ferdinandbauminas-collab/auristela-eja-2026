@@ -238,33 +238,40 @@ const Attendance = ({ teacher, onLogout }: Props) => {
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
-                        style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}
+                        style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'center',
+                            flex: 1,
+                            gap: '12px',
+                            paddingBottom: '60px' // Compensação visual para não ficar colado no fundo
+                        }}
                     >
                         {/* SELECTION CARDS */}
-                        <div style={{ display: 'grid', gap: '8px', marginBottom: '16px' }}>
+                        <div style={{ display: 'grid', gap: '16px', marginBottom: '24px' }}>
                             <motion.button
                                 whileTap={{ scale: 0.98 }}
                                 onClick={() => setIsDisciplineModalOpen(true)}
                                 style={{
-                                    width: '100%', padding: '16px 20px', borderRadius: '24px', border: 'none',
+                                    width: '100%', padding: '24px 24px', borderRadius: '32px', border: 'none',
                                     background: 'white', cursor: 'pointer', textAlign: 'left',
-                                    boxShadow: '0 4px 12px -2px rgba(0,0,0,0.05)',
-                                    display: 'flex', alignItems: 'center', gap: '16px'
+                                    boxShadow: '0 10px 25px -5px rgba(0,0,0,0.05)',
+                                    display: 'flex', alignItems: 'center', gap: '20px'
                                 }}
                             >
                                 <div style={{
-                                    width: '44px', height: '44px', background: 'rgba(16, 185, 129, 0.05)',
-                                    borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center'
+                                    width: '56px', height: '56px', background: 'rgba(16, 185, 129, 0.05)',
+                                    borderRadius: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center'
                                 }}>
-                                    <BookOpen size={22} color="#10b981" />
+                                    <BookOpen size={28} color="#10b981" />
                                 </div>
                                 <div style={{ flex: 1 }}>
-                                    <p style={{ color: '#94a3b8', fontSize: '0.65rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '2px' }}>Disciplina</p>
-                                    <h2 style={{ fontSize: '0.95rem', color: '#064e3b', fontWeight: 800, lineHeight: 1.2 }}>
+                                    <p style={{ color: '#94a3b8', fontSize: '0.8rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '4px', letterSpacing: '0.5px' }}>Disciplina</p>
+                                    <h2 style={{ fontSize: '1.25rem', color: '#064e3b', fontWeight: 900, lineHeight: 1.2 }}>
                                         {selectedDiscipline ? selectedDiscipline.name : 'QUAL A DISCIPLINA?'}
                                     </h2>
                                 </div>
-                                <ChevronRight size={18} color="#cbd5e1" />
+                                <ChevronRight size={22} color="#cbd5e1" />
                             </motion.button>
 
                             <motion.button
@@ -273,28 +280,28 @@ const Attendance = ({ teacher, onLogout }: Props) => {
                                 whileTap={{ scale: 0.98 }}
                                 onClick={() => selectedDiscipline && setIsClassModalOpen(true)}
                                 style={{
-                                    width: '100%', padding: '16px 20px', borderRadius: '24px', border: 'none',
+                                    width: '100%', padding: '24px 24px', borderRadius: '32px', border: 'none',
                                     background: selectedDiscipline ? 'white' : 'rgba(0,0,0,0.02)',
                                     cursor: selectedDiscipline ? 'pointer' : 'not-allowed',
                                     textAlign: 'left',
-                                    boxShadow: selectedDiscipline ? '0 4px 12px -2px rgba(0,0,0,0.05)' : 'none',
-                                    display: 'flex', alignItems: 'center', gap: '16px',
+                                    boxShadow: selectedDiscipline ? '0 10px 25px -5px rgba(0,0,0,0.05)' : 'none',
+                                    display: 'flex', alignItems: 'center', gap: '20px',
                                     opacity: selectedDiscipline ? 1 : 0.5
                                 }}
                             >
                                 <div style={{
-                                    width: '44px', height: '44px', background: 'rgba(59, 130, 246, 0.05)',
-                                    borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center'
+                                    width: '56px', height: '56px', background: 'rgba(59, 130, 246, 0.05)',
+                                    borderRadius: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center'
                                 }}>
-                                    <Users size={22} color="#3b82f6" />
+                                    <Users size={28} color="#3b82f6" />
                                 </div>
                                 <div style={{ flex: 1 }}>
-                                    <p style={{ color: '#94a3b8', fontSize: '0.65rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '2px' }}>Turma (Módulo)</p>
-                                    <h2 style={{ fontSize: '0.95rem', color: '#064e3b', fontWeight: 800, lineHeight: 1.2 }}>
+                                    <p style={{ color: '#94a3b8', fontSize: '0.8rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '4px', letterSpacing: '0.5px' }}>Turma (Módulo)</p>
+                                    <h2 style={{ fontSize: '1.25rem', color: '#064e3b', fontWeight: 900, lineHeight: 1.2 }}>
                                         {selectedClass ? selectedClass : 'PARA QUAL TURMA?'}
                                     </h2>
                                 </div>
-                                <ChevronRight size={18} color="#cbd5e1" />
+                                <ChevronRight size={22} color="#cbd5e1" />
                             </motion.button>
                         </div>
 
@@ -306,10 +313,10 @@ const Attendance = ({ teacher, onLogout }: Props) => {
                                 onClick={() => setIsWizardMode(true)}
                                 className="btn-primary"
                                 style={{
-                                    width: '100%', padding: '20px', borderRadius: '24px',
+                                    width: '100%', padding: '24px', borderRadius: '28px',
                                     fontSize: '1.2rem', fontWeight: 900,
                                     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px',
-                                    boxShadow: '0 8px 24px rgba(16, 185, 129, 0.2)'
+                                    boxShadow: '0 10px 30px rgba(16, 185, 129, 0.3)'
                                 }}
                             >
                                 <Users size={24} /> INICIAR FREQUÊNCIA
