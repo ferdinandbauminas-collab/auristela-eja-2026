@@ -344,24 +344,28 @@ const Attendance = ({ teacher, onLogout }: Props) => {
                             height: '60px',
                             alignItems: 'center'
                         }}>
-                            <button
+                            <motion.button
+                                whileTap={{ scale: 0.95 }}
                                 onClick={handleBack}
                                 style={{
                                     border: 'none',
-                                    background: 'rgba(239, 68, 68, 0.1)',
-                                    color: '#ef4444',
-                                    width: '44px',
-                                    height: '44px',
-                                    borderRadius: '14px',
+                                    background: 'white',
+                                    color: '#64748b',
+                                    padding: '10px 20px',
+                                    borderRadius: '20px',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
+                                    gap: '10px',
                                     cursor: 'pointer',
-                                    boxShadow: '0 4px 12px rgba(239, 68, 68, 0.1)'
+                                    boxShadow: '0 8px 16px rgba(0,0,0,0.08)',
+                                    fontWeight: 900,
+                                    fontSize: '0.8rem',
+                                    letterSpacing: '1px'
                                 }}
                             >
-                                <ArrowLeft size={24} />
-                            </button>
+                                <ArrowLeft size={20} strokeWidth={3} /> VOLTAR
+                            </motion.button>
                         </div>
 
                         <div className="glass-card" style={{
