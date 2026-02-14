@@ -371,7 +371,7 @@ const Attendance = ({ teacher, onLogout }: Props) => {
                             </button>
 
                             {/* Título da Turma em Destaque no Topo */}
-                            <div style={{ width: '100%', textAlign: 'center', marginBottom: '16px' }}>
+                            <div style={{ width: '100%', textAlign: 'center', marginBottom: '16px', paddingTop: '60px' }}>
                                 <p style={{
                                     color: '#94a3b8',
                                     fontWeight: 900,
