@@ -30,9 +30,9 @@ const Login = ({ onLogin }: Props) => {
                 }
             } catch (err: any) {
                 console.error('Erro ao buscar professores:', err);
-                const urlHint = import.meta.env.VITE_SUPABASE_URL ? `URL: OK (${import.meta.env.VITE_SUPABASE_URL.substring(0, 12)}...)` : 'URL: AUSENTE';
+                const urlHint = import.meta.env.VITE_SUPABASE_URL ? `URL: OK` : 'URL: AUSENTE';
                 const keyHint = import.meta.env.VITE_SUPABASE_ANON_KEY ? `KEY: OK` : 'KEY: AUSENTE';
-                setErrorMsg(`${err.message || 'Falha na conexão'}\n[${urlHint} | ${keyHint}]`);
+                setErrorMsg(`⚠️ FALHA DE CONEXÃO\n[${urlHint} | ${keyHint}]\n${err.message || ''}`);
             } finally {
                 setLoading(false);
             }
@@ -129,6 +129,11 @@ const Login = ({ onLogin }: Props) => {
                     showSearch={true}
                 />
             </AnimatePresence>
+
+            {/* Versão para controle de cache */}
+            <div style={{ position: 'fixed', bottom: '10px', right: '10px', fontSize: '0.6rem', color: '#cbd5e1', fontWeight: 600 }}>
+                VERSÃO v3.0.1
+            </div>
         </div>
     );
 };
