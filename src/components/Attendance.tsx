@@ -126,7 +126,7 @@ const Attendance = ({ teacher, onLogout }: Props) => {
     const isLastStudent = currentStudentIndex === students.length - 1;
 
     return (
-        <div style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '0 10px' }}>
+        <div style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '0 10px 40px 10px' }}>
             {!isWizardMode && !isSuccess && (
                 <header style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '32px', textAlign: 'center', position: 'relative' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
