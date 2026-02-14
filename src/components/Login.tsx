@@ -30,9 +30,20 @@ const Login = ({ onLogin }: Props) => {
                 }
             } catch (err: any) {
                 console.error('Erro ao buscar professores:', err);
-                const urlHint = import.meta.env.VITE_SUPABASE_URL ? `URL: OK` : 'URL: AUSENTE';
+                const url = import.meta.env.VITE_SUPABASE_URL;
+                const urlHint = url ? `URL: OK` : 'URL: AUSENTE';
                 const keyHint = import.meta.env.VITE_SUPABASE_ANON_KEY ? `KEY: OK` : 'KEY: AUSENTE';
-                setErrorMsg(`⚠️ FALHA DE CONEXÃO\n[${urlHint} | ${keyHint}]\n${err.message || ''}`);
+
+                // Teste de conectividade bruta
+                let netStatus = 'Testando...';
+                try {
+                    await fetch(`${url}/rest/v1/`, { method: 'OPTIONS' });
+                    netStatus = 'Servidor Online (CORS?)';
+                } catch (fErr) {
+                    netStatus = 'Servidor Inacessível (Rede/Bloqueio)';
+                }
+
+                setErrorMsg(`⚠️ FALHA DE CONEXÃO\n[${urlHint} | ${keyHint}]\n🌍 Rede: ${netStatus}\n${err.message || ''}`);
             } finally {
                 setLoading(false);
             }
