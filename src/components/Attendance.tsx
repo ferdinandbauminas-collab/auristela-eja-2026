@@ -126,18 +126,18 @@ const Attendance = ({ teacher, onLogout }: Props) => {
     const isLastStudent = currentStudentIndex === students.length - 1;
 
     return (
-        <div style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '0 10px 40px 10px' }}>
+        <div style={{ minHeight: '82vh', display: 'flex', flexDirection: 'column', padding: '0 20px 40px 20px' }}>
             {!isWizardMode && !isSuccess && (
-                <header style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '32px', textAlign: 'center', position: 'relative' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#94a3b8', marginBottom: '8px' }}>
-                            <CalendarIcon size={16} />
-                            <span style={{ fontSize: '0.85rem', fontWeight: 700 }}>{today}</span>
-                        </div>
-                        <h1 style={{ fontSize: '1.5rem', color: '#064e3b', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px' }}>{teacher.name}</h1>
+                <header style={{ textAlign: 'center', marginBottom: '20px', paddingTop: '20px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', color: '#94a3b8', marginBottom: '8px' }}>
+                        <CalendarIcon size={16} />
+                        <span style={{ fontSize: '0.85rem', fontWeight: 700 }}>{today}</span>
                     </div>
+                    <h1 style={{ fontSize: '1.5rem', color: '#064e3b', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px' }}>{teacher.name}</h1>
                 </header>
             )}
+
+            {!isWizardMode && !isSuccess && <div style={{ flex: 1 }} />}
 
             <AnimatePresence mode="wait">
                 {isSuccess ? (
