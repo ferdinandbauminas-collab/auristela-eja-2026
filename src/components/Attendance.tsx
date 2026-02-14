@@ -341,13 +341,36 @@ const Attendance = ({ teacher, onLogout }: Props) => {
                             minHeight: 'calc(100vh - 120px)',
                             overflow: 'hidden'
                         }}>
-                            {/* Barra de Progresso FixA (Fora do AnimatePresence) */}
+                            {/* Título da Turma em Destaque no Topo */}
+                            <div style={{ width: '100%', textAlign: 'center', marginBottom: '16px' }}>
+                                <p style={{
+                                    color: '#94a3b8',
+                                    fontWeight: 900,
+                                    fontSize: '0.8rem',
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '2px',
+                                    marginBottom: '4px'
+                                }}>
+                                    Chamada em Andamento
+                                </p>
+                                <h2 style={{
+                                    fontSize: '1.4rem',
+                                    color: '#064e3b',
+                                    fontWeight: 900,
+                                    margin: 0,
+                                    textTransform: 'uppercase'
+                                }}>
+                                    {selectedClass}
+                                </h2>
+                            </div>
+
+                            {/* Barra de Progresso Abaixo da Turma */}
                             <div style={{
                                 width: '100%',
                                 height: '8px',
                                 background: 'rgba(99, 102, 241, 0.1)',
                                 borderRadius: '4px',
-                                marginBottom: '40px',
+                                marginBottom: '24px',
                                 overflow: 'visible',
                                 position: 'relative'
                             }}>
@@ -410,11 +433,8 @@ const Attendance = ({ teacher, onLogout }: Props) => {
                                     </div>
 
                                     <div style={{ width: '100%', padding: '0 10px' }}>
-                                        <p style={{ color: '#94a3b8', fontWeight: 800, fontSize: '0.85rem', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                                            {selectedClass}
-                                        </p>
                                         <h2 style={{
-                                            fontSize: '1.8rem', // Ajustado para garantir as 2 linhas
+                                            fontSize: '2rem',
                                             color: '#000000',
                                             fontWeight: 900,
                                             lineHeight: 1.1,
@@ -424,7 +444,7 @@ const Attendance = ({ teacher, onLogout }: Props) => {
                                             WebkitBoxOrient: 'vertical',
                                             overflow: 'hidden',
                                             textOverflow: 'ellipsis',
-                                            maxHeight: '4rem' // Limita a altura para 2 linhas
+                                            maxHeight: '4.5rem'
                                         }}>
                                             {currentStudent?.name}
                                         </h2>
@@ -437,9 +457,9 @@ const Attendance = ({ teacher, onLogout }: Props) => {
                                 width: '100%',
                                 display: 'flex',
                                 flexDirection: 'column',
-                                gap: '12px',
+                                gap: '10px',
                                 marginTop: 'auto',
-                                paddingBottom: '40px'
+                                paddingBottom: '20px'
                             }}>
                                 <div style={{ display: 'flex', gap: '12px', width: '100%' }}>
                                     <motion.button
