@@ -390,37 +390,6 @@ const Attendance = ({ teacher, onLogout }: Props) => {
                                         paddingBottom: '20px'
                                     }}
                                 >
-                                    {/* Barra de Progresso no Topo */}
-                                    <div style={{
-                                        width: '100%',
-                                        height: '6px',
-                                        background: 'rgba(16, 185, 129, 0.1)',
-                                        borderRadius: '3px',
-                                        marginBottom: '30px',
-                                        overflow: 'hidden',
-                                        position: 'relative'
-                                    }}>
-                                        <motion.div
-                                            initial={{ width: 0 }}
-                                            animate={{ width: `${((currentStudentIndex + 1) / students.length) * 100}%` }}
-                                            style={{
-                                                height: '100%',
-                                                background: '#10b981',
-                                                borderRadius: '3px',
-                                                boxShadow: '0 0 10px rgba(16, 185, 129, 0.4)'
-                                            }}
-                                        />
-                                        <div style={{
-                                            position: 'absolute',
-                                            right: 0,
-                                            top: '-20px',
-                                            fontSize: '0.7rem',
-                                            fontWeight: 900,
-                                            color: '#10b981'
-                                        }}>
-                                            {currentStudentIndex + 1} / {students.length}
-                                        </div>
-                                    </div>
 
                                     <div style={{
                                         width: '130px',
