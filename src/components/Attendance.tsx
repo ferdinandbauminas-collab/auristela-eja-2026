@@ -126,19 +126,18 @@ const Attendance = ({ teacher, onLogout }: Props) => {
     const isLastStudent = currentStudentIndex === students.length - 1;
 
     return (
-        <div style={{ paddingTop: '10px', height: '100%', display: 'flex', flexDirection: 'column' }}>
-            <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-                <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#94a3b8', marginBottom: '4px' }}>
-                        <CalendarIcon size={14} />
-                        <span style={{ fontSize: '0.75rem', fontWeight: 700 }}>{today}</span>
+        <div style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '0 10px' }}>
+            {!isWizardMode && !isSuccess && (
+                <header style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '32px', textAlign: 'center', position: 'relative' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#94a3b8', marginBottom: '8px' }}>
+                            <CalendarIcon size={16} />
+                            <span style={{ fontSize: '0.85rem', fontWeight: 700 }}>{today}</span>
+                        </div>
+                        <h1 style={{ fontSize: '1.5rem', color: '#064e3b', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px' }}>{teacher.name}</h1>
                     </div>
-                    <h1 style={{ fontSize: '1.2rem', color: '#064e3b', fontWeight: 800 }}>{teacher.name}</h1>
-                </div>
-                <button onClick={onLogout} style={{ border: 'none', background: 'rgba(239, 68, 68, 0.05)', color: '#ef4444', padding: '10px', borderRadius: '14px', cursor: 'pointer' }}>
-                    <LogOut size={20} />
-                </button>
-            </header>
+                </header>
+            )}
 
             <AnimatePresence mode="wait">
                 {isSuccess ? (
@@ -521,6 +520,21 @@ const Attendance = ({ teacher, onLogout }: Props) => {
                 hideTrigger={true}
                 showSearch={false}
             />
+
+            {/* Botão de Logout fixo no topo direito */}
+            {!isWizardMode && !isSuccess && (
+                <button
+                    onClick={onLogout}
+                    style={{
+                        position: 'fixed', top: '20px', right: '20px',
+                        border: 'none', background: 'rgba(239, 68, 68, 0.1)',
+                        color: '#ef4444', padding: '12px', borderRadius: '16px',
+                        cursor: 'pointer', zIndex: 10
+                    }}
+                >
+                    <LogOut size={22} />
+                </button>
+            )}
         </div>
     );
 };
