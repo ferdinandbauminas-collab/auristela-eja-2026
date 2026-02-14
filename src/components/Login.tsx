@@ -30,29 +30,7 @@ const Login = ({ onLogin }: Props) => {
                 }
             } catch (err: any) {
                 console.error('Erro ao buscar professores:', err);
-                const url = import.meta.env.VITE_SUPABASE_URL;
-                const urlHint = url ? `URL: OK` : 'URL: AUSENTE';
-                const keyHint = import.meta.env.VITE_SUPABASE_ANON_KEY ? `KEY: OK` : 'KEY: AUSENTE';
-
-                // Teste de conectividade bruta
-                let supStatus = 'Testando...';
-                let googleStatus = 'Testando...';
-
-                try {
-                    await fetch('https://www.google.com', { mode: 'no-cors' });
-                    googleStatus = '✅ Google OK';
-                } catch (e) {
-                    googleStatus = '❌ Google OFF';
-                }
-
-                try {
-                    await fetch(`${url}/rest/v1/`, { method: 'OPTIONS' });
-                    supStatus = '✅ Supabase OK';
-                } catch (fErr) {
-                    supStatus = '❌ Supabase OFF';
-                }
-
-                setErrorMsg(`⚠️ FALHA DE CONEXÃO\n[${urlHint} | ${keyHint}]\n🌍 ${googleStatus} | ${supStatus}\n${err.message || ''}`);
+                setErrorMsg(`Erro: Falha na conexão (Código: Desconhecido)`);
             } finally {
                 setLoading(false);
             }
