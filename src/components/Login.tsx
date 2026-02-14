@@ -35,15 +35,24 @@ const Login = ({ onLogin }: Props) => {
                 const keyHint = import.meta.env.VITE_SUPABASE_ANON_KEY ? `KEY: OK` : 'KEY: AUSENTE';
 
                 // Teste de conectividade bruta
-                let netStatus = 'Testando...';
+                let supStatus = 'Testando...';
+                let googleStatus = 'Testando...';
+
                 try {
-                    await fetch(`${url}/rest/v1/`, { method: 'OPTIONS' });
-                    netStatus = 'Servidor Online (CORS?)';
-                } catch (fErr) {
-                    netStatus = 'Servidor Inacessível (Rede/Bloqueio)';
+                    await fetch('https://www.google.com', { mode: 'no-cors' });
+                    googleStatus = '✅ Google OK';
+                } catch (e) {
+                    googleStatus = '❌ Google OFF';
                 }
 
-                setErrorMsg(`⚠️ FALHA DE CONEXÃO\n[${urlHint} | ${keyHint}]\n🌍 Rede: ${netStatus}\n${err.message || ''}`);
+                try {
+                    await fetch(`${url}/rest/v1/`, { method: 'OPTIONS' });
+                    supStatus = '✅ Supabase OK';
+                } catch (fErr) {
+                    supStatus = '❌ Supabase OFF';
+                }
+
+                setErrorMsg(`⚠️ FALHA DE CONEXÃO\n[${urlHint} | ${keyHint}]\n🌍 ${googleStatus} | ${supStatus}\n${err.message || ''}`);
             } finally {
                 setLoading(false);
             }
