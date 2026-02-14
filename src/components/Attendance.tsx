@@ -353,7 +353,7 @@ const Attendance = ({ teacher, onLogout }: Props) => {
                                 style={{
                                     position: 'absolute',
                                     top: '20px',
-                                    left: '20px',
+                                    right: '20px',
                                     border: 'none',
                                     background: 'rgba(0,0,0,0.03)',
                                     color: '#64748b',
