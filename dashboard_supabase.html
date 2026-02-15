@@ -427,39 +427,58 @@
 
             // Processar Faltas Integrais e Gazeta
             Object.entries(dailyCompliance).forEach(([key, info]) => {
-                const sKey = key.split('_').slice(1).join('_');
+                const parts = key.split('_');
+                const date = parts[0];
+                const sKey = parts.slice(1).join('_');
+
+                if (!students[sKey].dayHistory) students[sKey].dayHistory = [];
+
                 const hasP = info.statuses.has('present') || info.statuses.has('presente');
                 const hasA = info.statuses.has('absent') || info.statuses.has('faltou');
 
+                let dayStatus = 'present';
                 // Regra de Dias de Falta Integral: Se TODOS os lançamentos do dia forem FALTA, conta 1 dia de falta
                 if (hasA && !hasP) {
+                    dayStatus = 'absent';
                     if (students[sKey]) students[sKey].absences++;
-                }
-
-                // Gazeta: Tem presença e falta no mesmo dia. Contamos o TOTAL de aulas perdidas no dia.
-                if (hasP && hasA) {
+                } else if (hasP && hasA) {
+                    dayStatus = 'gazeta';
                     if (students[sKey]) students[sKey].selectiveEvasionAulas += info.absenceCount;
                 }
+
+                students[sKey].dayHistory.push({ date, status: dayStatus });
             });
 
             // Gatilhos
             const triggers = [];
             Object.values(students).forEach(s => {
-                // Risco de Abandono (3 faltas seguidas - considerando o histórico já ordenado decrescente)
+                // Faltas consecutivas por DIA (considerando histórico diário ordenado decrescente)
+                const sortedDays = (s.dayHistory || []).sort((a, b) => b.date.localeCompare(a.date));
                 let consecutive = 0;
-                for (let i = 0; i < s.history.length; i++) {
-                    const st = s.history[i].status;
-                    if (st === 'absent' || st === 'faltou') {
+                for (let d of sortedDays) {
+                    if (d.status === 'absent') {
                         consecutive++;
-                        if (consecutive >= 3) {
-                            triggers.push({ type: 'danger', title: 'Risco de Abandono', student: s.name, class: s.class, reason: '3+ faltas consecutivas recentes' });
-                            break;
-                        }
                     } else break;
                 }
 
+                if (consecutive >= 3) {
+                    triggers.push({
+                        type: 'danger',
+                        title: 'Risco de Abandono',
+                        student: s.name,
+                        class: s.class,
+                        reason: `${consecutive} faltas consecutivas recentes`
+                    });
+                }
+
                 if (s.selectiveEvasionAulas >= 3) {
-                    triggers.push({ type: 'warning', title: 'Gazeta Recorrente', student: s.name, class: s.class, reason: `Faltou seletivamente em ${s.selectiveEvasionAulas} aulas totais` });
+                    triggers.push({
+                        type: 'warning',
+                        title: 'Gazeta Recorrente',
+                        student: s.name,
+                        class: s.class,
+                        reason: `Faltou seletivamente em ${s.selectiveEvasionAulas} aulas totais`
+                    });
                 }
             });
 
