@@ -235,35 +235,16 @@
     </div>
 
     <div class="container">
-        <header class="header">
+        <header class="header" style="justify-content: center; text-align: center; flex-direction: column;">
             <div>
-                <h1>Dashboard de Gestão EJA 2026</h1>
-                <p style="color: #64748b; margin: 5px 0 0 0;">Análise pedagógica em tempo real direto do banco de dados
-                </p>
+                <h1 style="text-transform: uppercase;">GESTÃO PEDAGÓGICA DE FREQUÊNCIA</h1>
+                <p style="color: #64748b; margin: 10px 0 0 0; letter-spacing: 1px; font-weight: 500;">Monitoramento
+                    Estratégico em Tempo Real (Supabase 2026)</p>
             </div>
-            <div id="last-update" class="badge">Sincronizando...</div>
+            <div id="last-update" class="badge" style="margin-top: 15px;">Sincronizando...</div>
         </header>
 
-        <section class="filters">
-            <div class="filter-item">
-                <label>TURMA</label>
-                <select id="filter-turma">
-                    <option value="">Todas as Turmas</option>
-                </select>
-            </div>
-            <div class="filter-item">
-                <label>DISCIPLINA</label>
-                <select id="filter-disciplina">
-                    <option value="">Todas as Disciplinas</option>
-                </select>
-            </div>
-            <div class="filter-item">
-                <label>PROFESSOR</label>
-                <select id="filter-professor">
-                    <option value="">Todos os Professores</option>
-                </select>
-            </div>
-        </section>
+        <!-- Filtros removidos conforme solicitado -->
 
         <section class="kpis">
             <div class="kpi-card">
@@ -343,7 +324,6 @@
 
         async function init() {
             await fetchData();
-            setupFilters();
 
             // Auto-refresh a cada 60 segundos
             setInterval(fetchData, 60000);
@@ -371,42 +351,10 @@
             }
         }
 
-        function setupFilters() {
-            const turmas = [...new Set(allData.map(d => d.class_name))].sort();
-            const disciplinas = [...new Set(allData.map(d => d.discipline))].sort();
-            const professores = [...new Set(allData.map(d => d.teacher_name))].sort();
-
-            populateSelect('filter-turma', turmas);
-            populateSelect('filter-disciplina', disciplinas);
-            populateSelect('filter-professor', professores);
-
-            ['filter-turma', 'filter-disciplina', 'filter-professor'].forEach(id => {
-                document.getElementById(id).addEventListener('change', updateDashboard);
-            });
-        }
-
-        function populateSelect(id, items) {
-            const select = document.getElementById(id);
-            items.forEach(item => {
-                const opt = document.createElement('option');
-                opt.value = opt.textContent = item;
-                select.appendChild(opt);
-            });
-        }
-
         function updateDashboard() {
-            const filterT = document.getElementById('filter-turma').value;
-            const filterD = document.getElementById('filter-disciplina').value;
-            const filterP = document.getElementById('filter-professor').value;
-
-            let filtered = allData;
-            if (filterT) filtered = filtered.filter(d => d.class_name === filterT);
-            if (filterD) filtered = filtered.filter(d => d.discipline === filterD);
-            if (filterP) filtered = filtered.filter(d => d.teacher_name === filterP);
-
-            renderKPIs(filtered);
-            renderAnalysis(filtered);
-            renderRecentTable(filtered.slice(0, 50));
+            renderKPIs(allData);
+            renderAnalysis(allData);
+            renderRecentTable(allData.slice(0, 50));
         }
 
         function renderKPIs(data) {
