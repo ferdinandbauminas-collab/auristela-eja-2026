@@ -270,6 +270,10 @@
                 <h1 style="text-transform: uppercase;">GESTÃO PEDAGÓGICA DE FREQUÊNCIA</h1>
                 <p style="color: #64748b; margin: 10px 0 0 0; letter-spacing: 1px; font-weight: 500;">Monitoramento
                     Estratégico em Tempo Real (Supabase 2026)</p>
+                <div id="data-corte-info"
+                    style="font-size: 0.75rem; color: #3f51b5; margin-top: 10px; font-weight: 800; background: #ebf0ff; padding: 5px 15px; border-radius: 20px; display: inline-block;">
+                    📅 ANALISANDO DESDE: <span id="display-data-corte">...</span>
+                </div>
             </div>
             <div id="last-update" class="badge" style="margin-top: 15px;">Sincronizando...</div>
         </header>
@@ -357,9 +361,17 @@
 
         const { createClient } = supabase;
         const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // --- CONFIGURAÇÃO DE CORTE DE DADOS ---
+        // Mude esta data para ignorar registros antigos ou de teste.
+        // Formato: 'AAAA-MM-DD'
+        const DATA_CORTE = '2026-02-14';
+        // --------------------------------------
+
         let allData = [];
 
         async function init() {
+            document.getElementById('display-data-corte').textContent = DATA_CORTE.split('-').reverse().join('/');
             await fetchData();
 
             // Auto-refresh a cada 60 segundos
@@ -371,6 +383,7 @@
                 const { data, error } = await supabaseClient
                     .from('ef_attendance')
                     .select('*')
+                    .gte('date', DATA_CORTE)
                     .order('date', { ascending: false }); // MAIS NOVOS PRIMEIRO POR PADRÃO
 
                 if (error) throw error;
