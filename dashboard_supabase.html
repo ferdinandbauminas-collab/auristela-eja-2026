@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Gestão Real-time Supabase</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Supabase Client CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .header h1 {
+            color: #1a237e;
+            margin: 0;
+        }
+
+        .badge {
+            background: #e8eaf6;
+            color: #3f51b5;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .filters,
+        .kpis {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .kpi-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 25px;
+            background-color: #f8faff;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid #eef2ff;
+        }
+
+        .kpi-card .value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1a237e;
+        }
+
+        .kpi-card .label {
+            font-size: 0.85rem;
+            color: #5c6bc0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+            margin-top: 5px;
+        }
+
+        label {
+            margin-bottom: 8px;
+            font-weight: 700;
+            color: #3f51b5;
+            font-size: 0.9rem;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            background: #fff;
+            font-size: 1rem;
+            color: #1e293b;
+        }
+
+        .card {
+            background: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+
+        .card h2 {
+            font-size: 1.1rem;
+            color: #1e293b;
+            margin-top: 0;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 14px 12px;
+            text-align: left;
+            font-size: 0.9rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        th {
+            background-color: #f8fafc;
+            color: #64748b;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+        }
+
+        tbody tr:hover {
+            background-color: #f8fafc;
+        }
+
+        .trigger-item {
+            padding: 15px;
+            margin-bottom: 12px;
+            border-radius: 10px;
+            border-left: 5px solid #ef4444;
+        }
+
+        .trigger-danger {
+            background: #fef2f2;
+            border-color: #ef4444;
+        }
+
+        .trigger-warning {
+            background: #fffbeb;
+            border-color: #f59e0b;
+        }
+
+        .risk-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .status-danger {
+            background: #fee2e2;
+            color: #ef4444;
+        }
+
+        .status-warning {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            transition: opacity 0.3s;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #e2e8f0;
+            border-top: 5px solid #3f51b5;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @media (max-width: 1000px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="loading" class="loading-overlay">
+        <div class="spinner"></div>
+        <p style="margin-top: 20px; font-weight: 700; color: #3f51b5;">CONECTANDO AO SUPABASE...</p>
+    </div>
+
+    <div class="container">
+        <header class="header">
+            <div>
+                <h1>Dashboard de Gestão EJA 2026</h1>
+                <p style="color: #64748b; margin: 5px 0 0 0;">Análise pedagógica em tempo real direto do banco de dados
+                </p>
+            </div>
+            <div id="last-update" class="badge">Sincronizando...</div>
+        </header>
+
+        <section class="filters">
+            <div class="filter-item">
+                <label>TURMA</label>
+                <select id="filter-turma">
+                    <option value="">Todas as Turmas</option>
+                </select>
+            </div>
+            <div class="filter-item">
+                <label>DISCIPLINA</label>
+                <select id="filter-disciplina">
+                    <option value="">Todas as Disciplinas</option>
+                </select>
+            </div>
+            <div class="filter-item">
+                <label>PROFESSOR</label>
+                <select id="filter-professor">
+                    <option value="">Todos os Professores</option>
+                </select>
+            </div>
+        </section>
+
+        <section class="kpis">
+            <div class="kpi-card">
+                <div id="kpi-total-aulas" class="value">0</div>
+                <div class="label">Total de Aulas</div>
+            </div>
+            <div class="kpi-card">
+                <div id="kpi-frequencia" class="value">0%</div>
+                <div class="label">Freq. Média</div>
+            </div>
+            <div class="kpi-card">
+                <div id="kpi-alertas" class="value" style="color: #ef4444;">0</div>
+                <div class="label">Alertas Ativos</div>
+            </div>
+        </section>
+
+        <div class="content-grid">
+            <div class="card">
+                <h2>🚨 Gatilhos para Intervenção</h2>
+                <div id="triggers-container">
+                    <p style="color: #94a3b8; font-style: italic;">Nenhum alerta detectado.</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📊 Frequência por Turma</h2>
+                <div id="class-ranking-container">
+                    <!-- Tabela de Ranking -->
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🏆 Top 10 Alunos com Mais Faltas</h2>
+                <div id="top-faltosos-container">
+                    <!-- Top 10 Faltosos -->
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🏃 Top 10 - Gastaria Seletiva (Gazeteiros)</h2>
+                <div id="top-gazeteiros-container">
+                    <!-- Top 10 Gazeteiros -->
+                </div>
+            </div>
+        </div>
+
+        <div class="card" style="margin-top: 20px;">
+            <h2>📅 Últimos Registros (Novos Primeiro)</h2>
+            <div style="overflow-x: auto;">
+                <table id="recent-records-table">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Aluno</th>
+                            <th>Turma</th>
+                            <th>Disciplina</th>
+                            <th>Professor</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recent-records-body">
+                        <!-- Linhas dinâmicas -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configurações do Supabase
+        const SUPABASE_URL = 'https://wkmjoeoankucnhhanbqj.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndrbWpvZW9hbmt1Y25oaGFuYnFqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwNzA2OTMsImV4cCI6MjA4NjY0NjY5M30.lCcKfDP-Zv56VtXxXtdaNjspO8FidkqIryd0ssdQYsM';
+
+        const { createClient } = supabase;
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+        let allData = [];
+
+        async function init() {
+            await fetchData();
+            setupFilters();
+
+            // Auto-refresh a cada 60 segundos
+            setInterval(fetchData, 60000);
+        }
+
+        async function fetchData() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('ef_attendance')
+                    .select('*')
+                    .order('date', { ascending: false }); // MAIS NOVOS PRIMEIRO POR PADRÃO
+
+                if (error) throw error;
+
+                allData = data;
+                updateDashboard();
+                document.getElementById('loading').style.opacity = '0';
+                setTimeout(() => document.getElementById('loading').style.display = 'none', 300);
+
+                const now = new Date();
+                document.getElementById('last-update').textContent = `Atualizado: ${now.toLocaleTimeString()}`;
+            } catch (err) {
+                console.error("Erro Supabase:", err);
+                alert("Erro ao conectar com Supabase. Verifique sua conexão.");
+            }
+        }
+
+        function setupFilters() {
+            const turmas = [...new Set(allData.map(d => d.class_name))].sort();
+            const disciplinas = [...new Set(allData.map(d => d.discipline))].sort();
+            const professores = [...new Set(allData.map(d => d.teacher_name))].sort();
+
+            populateSelect('filter-turma', turmas);
+            populateSelect('filter-disciplina', disciplinas);
+            populateSelect('filter-professor', professores);
+
+            ['filter-turma', 'filter-disciplina', 'filter-professor'].forEach(id => {
+                document.getElementById(id).addEventListener('change', updateDashboard);
+            });
+        }
+
+        function populateSelect(id, items) {
+            const select = document.getElementById(id);
+            items.forEach(item => {
+                const opt = document.createElement('option');
+                opt.value = opt.textContent = item;
+                select.appendChild(opt);
+            });
+        }
+
+        function updateDashboard() {
+            const filterT = document.getElementById('filter-turma').value;
+            const filterD = document.getElementById('filter-disciplina').value;
+            const filterP = document.getElementById('filter-professor').value;
+
+            let filtered = allData;
+            if (filterT) filtered = filtered.filter(d => d.class_name === filterT);
+            if (filterD) filtered = filtered.filter(d => d.discipline === filterD);
+            if (filterP) filtered = filtered.filter(d => d.teacher_name === filterP);
+
+            renderKPIs(filtered);
+            renderAnalysis(filtered);
+            renderRecentTable(filtered.slice(0, 50));
+        }
+
+        function renderKPIs(data) {
+            const total = data.length;
+            const present = data.filter(d => d.status.toLowerCase() === 'present' || d.status.toLowerCase() === 'presente').length;
+            const freq = total > 0 ? ((present / total) * 100).toFixed(1) : 0;
+
+            document.getElementById('kpi-total-aulas').textContent = total;
+            document.getElementById('kpi-frequencia').textContent = `${freq}%`;
+        }
+
+        function renderAnalysis(data) {
+            const students = {};
+            const classes = {};
+            const dailyCompliance = {}; // Para detectar gazeta
+
+            data.forEach(d => {
+                const sKey = `${d.student_name}_${d.class_name}`;
+                if (!students[sKey]) {
+                    students[sKey] = { name: d.student_name, class: d.class_name, absences: 0, total: 0, history: [], selectiveEvasionDays: 0 };
+                }
+                students[sKey].total++;
+                const isAbsent = d.status.toLowerCase() === 'absent' || d.status.toLowerCase() === 'faltou';
+                if (isAbsent) students[sKey].absences++;
+                students[sKey].history.push({ date: d.date, status: d.status.toLowerCase() });
+
+                // Agrupar por dia para detectar gazeta
+                const dayKey = `${d.date.split('T')[0]}_${sKey}`;
+                if (!dailyCompliance[dayKey]) dailyCompliance[dayKey] = new Set();
+                dailyCompliance[dayKey].add(d.status.toLowerCase());
+
+                if (!classes[d.class_name]) classes[d.class_name] = { present: 0, total: 0 };
+                classes[d.class_name].total++;
+                if (!isAbsent) classes[d.class_name].present++;
+            });
+
+            // Processar Gazeta
+            Object.entries(dailyCompliance).forEach(([key, statuses]) => {
+                const hasP = statuses.has('present') || statuses.has('presente');
+                const hasA = statuses.has('absent') || statuses.has('faltou');
+                if (hasP && hasA) {
+                    const sKey = key.split('_').slice(1).join('_');
+                    if (students[sKey]) students[sKey].selectiveEvasionDays++;
+                }
+            });
+
+            // Gatilhos
+            const triggers = [];
+            Object.values(students).forEach(s => {
+                // Risco de Abandono (3 faltas seguidas - considerando o histórico já ordenado decrescente)
+                let consecutive = 0;
+                for (let i = 0; i < s.history.length; i++) {
+                    const st = s.history[i].status;
+                    if (st === 'absent' || st === 'faltou') {
+                        consecutive++;
+                        if (consecutive >= 3) {
+                            triggers.push({ type: 'danger', title: 'Risco de Abandono', student: s.name, class: s.class, reason: '3+ faltas consecutivas recentes' });
+                            break;
+                        }
+                    } else break;
+                }
+
+                if (s.selectiveEvasionDays >= 2) {
+                    triggers.push({ type: 'warning', title: 'Gazeta Recorrente', student: s.name, class: s.class, reason: `Faltou seletivamente em ${s.selectiveEvasionDays} dias` });
+                }
+            });
+
+            document.getElementById('kpi-alertas').textContent = triggers.length;
+
+            // Render Triggers
+            const tCont = document.getElementById('triggers-container');
+            if (triggers.length === 0) {
+                tCont.innerHTML = '<p style="color: #94a3b8; font-style: italic;">Nenhum risco crítico detectado.</p>';
+            } else {
+                tCont.innerHTML = triggers.slice(0, 10).map(t => `
+                    <div class="trigger-item ${t.type === 'danger' ? 'trigger-danger' : 'trigger-warning'}">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <strong style="color: ${t.type === 'danger' ? '#ef4444' : '#d97706'}; font-size: 0.8rem;">${t.title}</strong>
+                            <span class="risk-badge" style="background: white; border: 1px solid #ddd;">${t.class}</span>
+                        </div>
+                        <div style="font-weight: 700; margin: 5px 0;">${t.student}</div>
+                        <div style="font-size: 0.8rem; color: #64748b;">${t.reason}</div>
+                    </div>
+                `).join('');
+            }
+
+            // Ranking Turma
+            const rCont = document.getElementById('class-ranking-container');
+            const ranking = Object.entries(classes)
+                .map(([name, s]) => ({ name, freq: ((s.present / s.total) * 100).toFixed(0) }))
+                .sort((a, b) => b.freq - a.freq);
+
+            rCont.innerHTML = `<table>
+                <thead><tr><th>Turma</th><th>Frequência</th></tr></thead>
+                <tbody>${ranking.map(r => `<tr><td>${r.name}</td><td style="font-weight:700; color:#3f51b5;">${r.freq}%</td></tr>`).join('')}</tbody>
+            </table>`;
+
+            // Top Faltosos
+            const fCont = document.getElementById('top-faltosos-container');
+            const topF = Object.values(students).sort((a, b) => b.absences - a.absences).slice(0, 10);
+            fCont.innerHTML = `<table>
+                <thead><tr><th>Aluno</th><th>Faltas</th></tr></thead>
+                <tbody>${topF.map(s => `<tr><td>${s.name}</td><td style="color:#ef4444; font-weight:700;">${s.absences}</td></tr>`).join('')}</tbody>
+            </table>`;
+
+            // Top Gazeteiros
+            const gCont = document.getElementById('top-gazeteiros-container');
+            const topG = Object.values(students).sort((a, b) => b.selectiveEvasionDays - a.selectiveEvasionDays).slice(0, 10);
+            gCont.innerHTML = `<table>
+                <thead><tr><th>Aluno</th><th>Dias</th></tr></thead>
+                <tbody>${topG.filter(s => s.selectiveEvasionDays > 0).map(s => `<tr><td>${s.name}</td><td style="color:#f59e0b; font-weight:700;">${s.selectiveEvasionDays}</td></tr>`).join('')}</tbody>
+            </table>`;
+        }
+
+        function renderRecentTable(data) {
+            const body = document.getElementById('recent-records-body');
+            body.innerHTML = data.map(d => {
+                const dateClean = new Date(d.date).toLocaleString('pt-BR');
+                const isAbsent = d.status.toLowerCase() === 'absent' || d.status.toLowerCase() === 'faltou';
+                return `
+                    <tr>
+                        <td style="font-size: 0.8rem; color: #64748b;">${dateClean}</td>
+                        <td style="font-weight: 700;">${d.student_name}</td>
+                        <td>${d.class_name}</td>
+                        <td style="font-size: 0.8rem;">${d.discipline}</td>
+                        <td style="font-size: 0.8rem; color: #64748b;">${d.teacher_name}</td>
+                        <td><span class="risk-badge ${isAbsent ? 'status-danger' : 'status-success'}" style="${!isAbsent ? 'background:#dcfce7; color:#15803d;' : ''}">${d.status}</span></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        init();
+    </script>
+</body>
+
+</html>
