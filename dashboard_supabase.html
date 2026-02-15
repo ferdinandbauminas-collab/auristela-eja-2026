@@ -497,7 +497,7 @@
                 const id = `mon_${s.name}_${s.class}`.replace(/\s+/g, '_');
                 const isActive = localStorage.getItem(id) === 'true';
                 return `<tr>
-                        <td>${s.name}</td>
+                        <td>${s.name} - ${s.class}</td>
                         <td style="color:#ef4444; font-weight:700;">${s.absences}</td>
                         <td><button class="btn-monitor ${isActive ? 'active' : ''}" onclick="toggleMonitor('${id}', this)">${isActive ? 'Monitorado' : 'Monitorar'}</button></td>
                     </tr>`;
@@ -513,7 +513,7 @@
                 const id = `mon_${s.name}_${s.class}`.replace(/\s+/g, '_');
                 const isActive = localStorage.getItem(id) === 'true';
                 return `<tr>
-                        <td>${s.name}</td>
+                        <td>${s.name} - ${s.class}</td>
                         <td style="color:#f59e0b; font-weight:700;">${s.selectiveEvasionAulas}</td>
                         <td><button class="btn-monitor ${isActive ? 'active' : ''}" onclick="toggleMonitor('${id}', this)">${isActive ? 'Monitorado' : 'Monitorar'}</button></td>
                     </tr>`;
