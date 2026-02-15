@@ -489,16 +489,27 @@
             if (triggers.length === 0) {
                 tCont.innerHTML = '<p style="color: #94a3b8; font-style: italic;">Nenhum risco crítico detectado.</p>';
             } else {
-                tCont.innerHTML = triggers.slice(0, 10).map(t => `
+                tCont.innerHTML = triggers.slice(0, 10).map(t => {
+                    const id = `mon_${t.student}_${t.class}`.replace(/\s+/g, '_');
+                    const isActive = localStorage.getItem(id) === 'true';
+                    return `
                     <div class="trigger-item ${t.type === 'danger' ? 'trigger-danger' : 'trigger-warning'}">
-                        <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <strong style="color: ${t.type === 'danger' ? '#ef4444' : '#d97706'}; font-size: 0.8rem;">${t.title}</strong>
-                            <span class="risk-badge" style="background: white; border: 1px solid #ddd;">${t.class}</span>
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                            <div style="flex: 1;">
+                                <div style="display:flex; justify-content:space-between; align-items:center;">
+                                    <strong style="color: ${t.type === 'danger' ? '#ef4444' : '#d97706'}; font-size: 0.8rem;">${t.title}</strong>
+                                    <span class="risk-badge" style="background: white; border: 1px solid #ddd;">${t.class}</span>
+                                </div>
+                                <div style="font-weight: 700; margin: 5px 0; font-size: 0.85rem;">${t.student} - ${t.class}</div>
+                                <div style="font-size: 0.8rem; color: #64748b;">${t.reason}</div>
+                            </div>
+                            <div style="margin-left: 15px;">
+                                <button class="btn-monitor ${isActive ? 'active' : ''}" onclick="toggleMonitor('${id}', this)">${isActive ? 'Monitorado' : 'Monitorar'}</button>
+                            </div>
                         </div>
-                        <div style="font-weight: 700; margin: 5px 0;">${t.student}</div>
-                        <div style="font-size: 0.8rem; color: #64748b;">${t.reason}</div>
                     </div>
-                `).join('');
+                `;
+                }).join('');
             }
 
             // Ranking Turma
