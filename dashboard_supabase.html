@@ -186,6 +186,31 @@
             color: #d97706;
         }
 
+        /* Estilos do Botão Monitorar */
+        .btn-monitor {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            border: 1px solid #e2e8f0;
+            background: #fff;
+            color: #64748b;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+
+        .btn-monitor.active {
+            background: #dcfce7;
+            color: #15803d;
+            border-color: #bbf7d0;
+        }
+
+        .btn-monitor:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
         .loading-overlay {
             position: fixed;
             top: 0;
@@ -467,17 +492,47 @@
             const fCont = document.getElementById('top-faltosos-container');
             const topF = Object.values(students).sort((a, b) => b.absences - a.absences).slice(0, 10);
             fCont.innerHTML = `<table>
-                <thead><tr><th>Aluno</th><th>Dias de Falta</th></tr></thead>
-                <tbody>${topF.map(s => `<tr><td>${s.name}</td><td style="color:#ef4444; font-weight:700;">${s.absences}</td></tr>`).join('')}</tbody>
+                <thead><tr><th>Aluno</th><th>Dias de Falta</th><th>Status</th></tr></thead>
+                <tbody>${topF.map(s => {
+                const id = `mon_${s.name}_${s.class}`.replace(/\s+/g, '_');
+                const isActive = localStorage.getItem(id) === 'true';
+                return `<tr>
+                        <td>${s.name}</td>
+                        <td style="color:#ef4444; font-weight:700;">${s.absences}</td>
+                        <td><button class="btn-monitor ${isActive ? 'active' : ''}" onclick="toggleMonitor('${id}', this)">${isActive ? 'Monitorado' : 'Monitorar'}</button></td>
+                    </tr>`;
+            }).join('')}</tbody>
             </table>`;
 
             // Top Gazeteiros
             const gCont = document.getElementById('top-gazeteiros-container');
             const topG = Object.values(students).sort((a, b) => b.selectiveEvasionAulas - a.selectiveEvasionAulas).slice(0, 10);
             gCont.innerHTML = `<table>
-                <thead><tr><th>Aluno</th><th>Aulas Perdidas</th></tr></thead>
-                <tbody>${topG.filter(s => s.selectiveEvasionAulas > 0).map(s => `<tr><td>${s.name}</td><td style="color:#f59e0b; font-weight:700;">${s.selectiveEvasionAulas}</td></tr>`).join('')}</tbody>
+                <thead><tr><th>Aluno</th><th>Aulas Perdidas</th><th>Status</th></tr></thead>
+                <tbody>${topG.filter(s => s.selectiveEvasionAulas > 0).map(s => {
+                const id = `mon_${s.name}_${s.class}`.replace(/\s+/g, '_');
+                const isActive = localStorage.getItem(id) === 'true';
+                return `<tr>
+                        <td>${s.name}</td>
+                        <td style="color:#f59e0b; font-weight:700;">${s.selectiveEvasionAulas}</td>
+                        <td><button class="btn-monitor ${isActive ? 'active' : ''}" onclick="toggleMonitor('${id}', this)">${isActive ? 'Monitorado' : 'Monitorar'}</button></td>
+                    </tr>`;
+            }).join('')}</tbody>
             </table>`;
+        }
+
+        function toggleMonitor(id, btn) {
+            const current = localStorage.getItem(id) === 'true';
+            const next = !current;
+            localStorage.setItem(id, next);
+
+            if (next) {
+                btn.classList.add('active');
+                btn.textContent = 'Monitorado';
+            } else {
+                btn.classList.remove('active');
+                btn.textContent = 'Monitorar';
+            }
         }
 
         function renderRecentTable(data) {
