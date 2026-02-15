@@ -374,36 +374,41 @@
             data.forEach(d => {
                 const sKey = `${d.student_name}_${d.class_name}`;
                 if (!students[sKey]) {
-                    students[sKey] = { name: d.student_name, class: d.class_name, absences: 0, total: 0, history: [], selectiveEvasionDays: 0 };
+                    students[sKey] = { name: d.student_name, class: d.class_name, absences: 0, total: 0, history: [], selectiveEvasionAulas: 0 };
                 }
                 students[sKey].total++;
                 students[sKey].history.push({ date: d.date, status: d.status.toLowerCase() });
 
                 // Agrupar por dia para detectar faltas integrais e gazeta
                 const dayKey = `${d.date.split('T')[0]}_${sKey}`;
-                if (!dailyCompliance[dayKey]) dailyCompliance[dayKey] = new Set();
-                dailyCompliance[dayKey].add(d.status.toLowerCase());
+                if (!dailyCompliance[dayKey]) dailyCompliance[dayKey] = { statuses: new Set(), absenceCount: 0 };
+
+                const status = d.status.toLowerCase();
+                const isAbsent = status === 'absent' || status === 'faltou';
+
+                dailyCompliance[dayKey].statuses.add(status);
+                if (isAbsent) dailyCompliance[dayKey].absenceCount++;
 
                 if (!classes[d.class_name]) classes[d.class_name] = { present: 0, total: 0 };
                 classes[d.class_name].total++;
-                const isPresent = d.status.toLowerCase() === 'present' || d.status.toLowerCase() === 'presente';
+                const isPresent = status === 'present' || status === 'presente';
                 if (isPresent) classes[d.class_name].present++;
             });
 
             // Processar Faltas Integrais e Gazeta
-            Object.entries(dailyCompliance).forEach(([key, statuses]) => {
+            Object.entries(dailyCompliance).forEach(([key, info]) => {
                 const sKey = key.split('_').slice(1).join('_');
-                const hasP = statuses.has('present') || statuses.has('presente');
-                const hasA = statuses.has('absent') || statuses.has('faltou');
+                const hasP = info.statuses.has('present') || info.statuses.has('presente');
+                const hasA = info.statuses.has('absent') || info.statuses.has('faltou');
 
-                // Regra Nova: Se TODOS os lançamentos do dia forem FALTA, conta 1 dia de falta
+                // Regra de Dias de Falta Integral: Se TODOS os lançamentos do dia forem FALTA, conta 1 dia de falta
                 if (hasA && !hasP) {
                     if (students[sKey]) students[sKey].absences++;
                 }
 
-                // Gazeta: Tem presença e falta no mesmo dia
+                // Gazeta: Tem presença e falta no mesmo dia. Contamos o TOTAL de aulas perdidas no dia.
                 if (hasP && hasA) {
-                    if (students[sKey]) students[sKey].selectiveEvasionDays++;
+                    if (students[sKey]) students[sKey].selectiveEvasionAulas += info.absenceCount;
                 }
             });
 
@@ -423,8 +428,8 @@
                     } else break;
                 }
 
-                if (s.selectiveEvasionDays >= 2) {
-                    triggers.push({ type: 'warning', title: 'Gazeta Recorrente', student: s.name, class: s.class, reason: `Faltou seletivamente em ${s.selectiveEvasionDays} dias` });
+                if (s.selectiveEvasionAulas >= 3) {
+                    triggers.push({ type: 'warning', title: 'Gazeta Recorrente', student: s.name, class: s.class, reason: `Faltou seletivamente em ${s.selectiveEvasionAulas} aulas totais` });
                 }
             });
 
@@ -468,10 +473,10 @@
 
             // Top Gazeteiros
             const gCont = document.getElementById('top-gazeteiros-container');
-            const topG = Object.values(students).sort((a, b) => b.selectiveEvasionDays - a.selectiveEvasionDays).slice(0, 10);
+            const topG = Object.values(students).sort((a, b) => b.selectiveEvasionAulas - a.selectiveEvasionAulas).slice(0, 10);
             gCont.innerHTML = `<table>
-                <thead><tr><th>Aluno</th><th>Dias</th></tr></thead>
-                <tbody>${topG.filter(s => s.selectiveEvasionDays > 0).map(s => `<tr><td>${s.name}</td><td style="color:#f59e0b; font-weight:700;">${s.selectiveEvasionDays}</td></tr>`).join('')}</tbody>
+                <thead><tr><th>Aluno</th><th>Aulas Perdidas</th></tr></thead>
+                <tbody>${topG.filter(s => s.selectiveEvasionAulas > 0).map(s => `<tr><td>${s.name}</td><td style="color:#f59e0b; font-weight:700;">${s.selectiveEvasionAulas}</td></tr>`).join('')}</tbody>
             </table>`;
         }
 
