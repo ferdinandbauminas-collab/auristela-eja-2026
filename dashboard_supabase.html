@@ -567,13 +567,53 @@
 
             // Ranking Disciplina
             const sCont = document.getElementById('subject-ranking-container');
+            let totalAulasS = 0;
+            let totalFaltasS = 0;
+            let totalPresencasS = 0;
+
             const rankingSub = Object.entries(subjects)
-                .map(([name, s]) => ({ name, freq: ((s.present / s.total) * 100).toFixed(0) }))
+                .map(([name, s]) => {
+                    const faltas = s.total - s.present;
+                    totalAulasS += s.total;
+                    totalFaltasS += faltas;
+                    totalPresencasS += s.present;
+                    return {
+                        name,
+                        aulas: s.total,
+                        faltas: faltas,
+                        freq: ((s.present / s.total) * 100).toFixed(0)
+                    };
+                })
                 .sort((a, b) => b.freq - a.freq);
 
+            const totalFreqS = totalAulasS > 0 ? ((totalPresencasS / totalAulasS) * 100).toFixed(0) : 0;
+
             sCont.innerHTML = `<table>
-                <thead><tr><th>Disciplina</th><th>Frequência</th></tr></thead>
-                <tbody>${rankingSub.map(r => `<tr><td>${r.name}</td><td style="font-weight:700; color:#10b981;">${r.freq}%</td></tr>`).join('')}</tbody>
+                <thead>
+                    <tr>
+                        <th>Disciplina</th>
+                        <th>Aulas</th>
+                        <th>Faltas</th>
+                        <th>Freq.</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${rankingSub.map(r => `
+                        <tr>
+                            <td>${r.name}</td>
+                            <td>${r.aulas}</td>
+                            <td style="color:#ef4444;">${r.faltas}</td>
+                            <td style="font-weight:700; color:#10b981;">${r.freq}%</td>
+                        </tr>`).join('')}
+                </tbody>
+                <tfoot>
+                    <tr style="background: #f8fafc; font-weight: 800; border-top: 2px solid #e2e8f0;">
+                        <td>GERAL</td>
+                        <td>${totalAulasS}</td>
+                        <td style="color:#ef4444;">${totalFaltasS}</td>
+                        <td style="color:#3f51b5;">${totalFreqS}%</td>
+                    </tr>
+                </tfoot>
             </table>`;
 
             // Top Faltosos
