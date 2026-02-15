@@ -474,10 +474,10 @@
                 if (s.selectiveEvasionAulas >= 3) {
                     triggers.push({
                         type: 'warning',
-                        title: 'Gazeta Recorrente',
+                        title: 'RISCO DE ABANDONO',
                         student: s.name,
                         class: s.class,
-                        reason: `Faltou seletivamente em ${s.selectiveEvasionAulas} aulas totais`
+                        reason: `ESTÁ HÁ ${s.selectiveEvasionAulas} DIAS SEM VIR À ESCOLA`
                     });
                 }
             });
