@@ -462,9 +462,20 @@
                 }
 
                 if (consecutive >= 3) {
+                    // Verificar se houve risco de abandono no passado (reincidência)
+                    const pastDays = sortedDays.slice(consecutive);
+                    let hadPastAbandono = false;
+                    let pCount = 0;
+                    for (let d of pastDays) {
+                        if (d.status === 'absent') {
+                            pCount++;
+                            if (pCount >= 3) { hadPastAbandono = true; break; }
+                        } else pCount = 0;
+                    }
+
                     triggers.push({
                         type: 'danger',
-                        title: 'Risco de Abandono',
+                        title: hadPastAbandono ? 'REINCIDÊNCIA - ABANDONO' : 'Risco de Abandono',
                         student: s.name,
                         class: s.class,
                         reason: `${consecutive} faltas consecutivas recentes`
@@ -472,6 +483,9 @@
                 }
 
                 if (s.selectiveEvasionAulas >= 3) {
+                    // Para gazeta (renomeada para Risco de Abandono), reincidência é se ele já teve gazetas no passado
+                    // mas a regra de "sair e voltar" é mais clara no abandono consecutivo.
+                    // Aplicaremos a lógica de reincidência também aqui se ele já teve um histórico de gazetas alto
                     triggers.push({
                         type: 'warning',
                         title: 'RISCO DE ABANDONO',
