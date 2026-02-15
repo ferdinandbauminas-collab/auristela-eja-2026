@@ -477,6 +477,23 @@
                 students[sKey].dayHistory.push({ date, status: dayStatus });
             });
 
+            // Segunda passada nos dados para identificar Gazetas por Disciplina
+            data.forEach(d => {
+                const status = d.status.toLowerCase();
+                const isAbsent = status === 'absent' || status === 'faltou';
+                if (isAbsent) {
+                    const sKey = `${d.student_name}_${d.class_name}`;
+                    const dayKey = `${d.date.split('T')[0]}_${sKey}`;
+                    const info = dailyCompliance[dayKey];
+                    const hasP = info.statuses.has('present') || info.statuses.has('presente');
+
+                    if (hasP) {
+                        if (!subjects[d.subject_name].gazetaAulas) subjects[d.subject_name].gazetaAulas = 0;
+                        subjects[d.subject_name].gazetaAulas++;
+                    }
+                }
+            });
+
             // Gatilhos
             const triggers = [];
             Object.values(students).forEach(s => {
@@ -569,18 +586,22 @@
             const sCont = document.getElementById('subject-ranking-container');
             let totalAulasS = 0;
             let totalFaltasS = 0;
+            let totalGazetasS = 0;
             let totalPresencasS = 0;
 
             const rankingSub = Object.entries(subjects)
                 .map(([name, s]) => {
                     const faltas = s.total - s.present;
+                    const gazetas = s.gazetaAulas || 0;
                     totalAulasS += s.total;
                     totalFaltasS += faltas;
+                    totalGazetasS += gazetas;
                     totalPresencasS += s.present;
                     return {
                         name,
                         aulas: s.total,
                         faltas: faltas,
+                        gazetas: gazetas,
                         freq: ((s.present / s.total) * 100).toFixed(0)
                     };
                 })
@@ -594,6 +615,7 @@
                         <th>Disciplina</th>
                         <th>Aulas</th>
                         <th>Faltas</th>
+                        <th title="Faltas em dias que o aluno teve presença (Gazeta)">Aul. Perdidas</th>
                         <th>Freq.</th>
                     </tr>
                 </thead>
@@ -602,7 +624,8 @@
                         <tr>
                             <td>${r.name}</td>
                             <td>${r.aulas}</td>
-                            <td style="color:#ef4444;">${r.faltas}</td>
+                            <td style="color:#64748b;">${r.faltas}</td>
+                            <td style="color:#ef4444; font-weight:700;">${r.gazetas}</td>
                             <td style="font-weight:700; color:#10b981;">${r.freq}%</td>
                         </tr>`).join('')}
                 </tbody>
@@ -610,7 +633,8 @@
                     <tr style="background: #f8fafc; font-weight: 800; border-top: 2px solid #e2e8f0;">
                         <td>GERAL</td>
                         <td>${totalAulasS}</td>
-                        <td style="color:#ef4444;">${totalFaltasS}</td>
+                        <td style="color:#64748b;">${totalFaltasS}</td>
+                        <td style="color:#ef4444;">${totalGazetasS}</td>
                         <td style="color:#3f51b5;">${totalFreqS}%</td>
                     </tr>
                 </tfoot>
