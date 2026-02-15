@@ -330,6 +330,13 @@
                     <!-- Tabela de Ranking por Disciplina -->
                 </div>
             </div>
+
+            <div class="card">
+                <h2>👨‍🏫 Gazeta por Professor (Aulas Perdidas)</h2>
+                <div id="professor-ranking-container">
+                    <!-- Tabela de Gazetas por Professor -->
+                </div>
+            </div>
         </div>
 
         <div class="card" style="margin-top: 20px;">
@@ -420,6 +427,7 @@
             const students = {};
             const classes = {};
             const subjects = {}; // Agrupamento por disciplina
+            const professors = {}; // Agrupamento por professor
             const dailyCompliance = {}; // Para detectar gazeta
 
             data.forEach(d => {
@@ -477,7 +485,7 @@
                 students[sKey].dayHistory.push({ date, status: dayStatus });
             });
 
-            // Segunda passada nos dados para identificar Gazetas por Disciplina
+            // Segunda passada nos dados para identificar Gazetas por Disciplina e Professor
             data.forEach(d => {
                 const status = d.status.toLowerCase();
                 const isAbsent = status === 'absent' || status === 'faltou';
@@ -488,8 +496,13 @@
                     const hasP = info.statuses.has('present') || info.statuses.has('presente');
 
                     if (hasP) {
+                        // Por Disciplina
                         if (!subjects[d.subject_name].gazetaAulas) subjects[d.subject_name].gazetaAulas = 0;
                         subjects[d.subject_name].gazetaAulas++;
+
+                        // Por Professor
+                        if (!professors[d.teacher_name]) professors[d.teacher_name] = { gazetaAulas: 0 };
+                        professors[d.teacher_name].gazetaAulas++;
                     }
                 }
             });
@@ -638,6 +651,20 @@
                         <td style="color:#3f51b5;">${totalFreqS}%</td>
                     </tr>
                 </tfoot>
+            </table>`;
+
+            // Ranking Professor (Gazeta)
+            const pCont = document.getElementById('professor-ranking-container');
+            const rankingProf = Object.entries(professors)
+                .map(([name, s]) => ({ name, gazetas: s.gazetaAulas }))
+                .sort((a, b) => b.gazetas - a.gazetas);
+
+            pCont.innerHTML = `<table>
+                <thead><tr><th>Professor</th><th>Total Aulas Perdidas (Gazeta)</th></tr></thead>
+                <tbody>
+                    ${rankingProf.map(r => `<tr><td>${r.name}</td><td style="font-weight:700; color:#ef4444;">${r.gazetas}</td></tr>`).join('')}
+                    ${rankingProf.length === 0 ? '<tr><td colspan="2" style="color:#94a3b8; font-style:italic; text-align:center;">Nenhuma gazeta detectada.</td></tr>' : ''}
+                </tbody>
             </table>`;
 
             // Top Faltosos
