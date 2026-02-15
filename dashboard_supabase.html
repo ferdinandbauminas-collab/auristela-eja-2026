@@ -377,26 +377,32 @@
                     students[sKey] = { name: d.student_name, class: d.class_name, absences: 0, total: 0, history: [], selectiveEvasionDays: 0 };
                 }
                 students[sKey].total++;
-                const isAbsent = d.status.toLowerCase() === 'absent' || d.status.toLowerCase() === 'faltou';
-                if (isAbsent) students[sKey].absences++;
                 students[sKey].history.push({ date: d.date, status: d.status.toLowerCase() });
 
-                // Agrupar por dia para detectar gazeta
+                // Agrupar por dia para detectar faltas integrais e gazeta
                 const dayKey = `${d.date.split('T')[0]}_${sKey}`;
                 if (!dailyCompliance[dayKey]) dailyCompliance[dayKey] = new Set();
                 dailyCompliance[dayKey].add(d.status.toLowerCase());
 
                 if (!classes[d.class_name]) classes[d.class_name] = { present: 0, total: 0 };
                 classes[d.class_name].total++;
-                if (!isAbsent) classes[d.class_name].present++;
+                const isPresent = d.status.toLowerCase() === 'present' || d.status.toLowerCase() === 'presente';
+                if (isPresent) classes[d.class_name].present++;
             });
 
-            // Processar Gazeta
+            // Processar Faltas Integrais e Gazeta
             Object.entries(dailyCompliance).forEach(([key, statuses]) => {
+                const sKey = key.split('_').slice(1).join('_');
                 const hasP = statuses.has('present') || statuses.has('presente');
                 const hasA = statuses.has('absent') || statuses.has('faltou');
+
+                // Regra Nova: Se TODOS os lançamentos do dia forem FALTA, conta 1 dia de falta
+                if (hasA && !hasP) {
+                    if (students[sKey]) students[sKey].absences++;
+                }
+
+                // Gazeta: Tem presença e falta no mesmo dia
                 if (hasP && hasA) {
-                    const sKey = key.split('_').slice(1).join('_');
                     if (students[sKey]) students[sKey].selectiveEvasionDays++;
                 }
             });
@@ -456,7 +462,7 @@
             const fCont = document.getElementById('top-faltosos-container');
             const topF = Object.values(students).sort((a, b) => b.absences - a.absences).slice(0, 10);
             fCont.innerHTML = `<table>
-                <thead><tr><th>Aluno</th><th>Faltas</th></tr></thead>
+                <thead><tr><th>Aluno</th><th>Dias de Falta</th></tr></thead>
                 <tbody>${topF.map(s => `<tr><td>${s.name}</td><td style="color:#ef4444; font-weight:700;">${s.absences}</td></tr>`).join('')}</tbody>
             </table>`;
 
