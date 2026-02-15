@@ -319,6 +319,13 @@
                     <!-- Tabela de Ranking -->
                 </div>
             </div>
+
+            <div class="card">
+                <h2>📚 Frequência por Disciplina</h2>
+                <div id="subject-ranking-container">
+                    <!-- Tabela de Ranking por Disciplina -->
+                </div>
+            </div>
         </div>
 
         <div class="card" style="margin-top: 20px;">
@@ -399,6 +406,7 @@
         function renderAnalysis(data) {
             const students = {};
             const classes = {};
+            const subjects = {}; // Agrupamento por disciplina
             const dailyCompliance = {}; // Para detectar gazeta
 
             data.forEach(d => {
@@ -421,8 +429,15 @@
 
                 if (!classes[d.class_name]) classes[d.class_name] = { present: 0, total: 0 };
                 classes[d.class_name].total++;
+
+                if (!subjects[d.subject_name]) subjects[d.subject_name] = { present: 0, total: 0 };
+                subjects[d.subject_name].total++;
+
                 const isPresent = status === 'present' || status === 'presente';
-                if (isPresent) classes[d.class_name].present++;
+                if (isPresent) {
+                    classes[d.class_name].present++;
+                    subjects[d.subject_name].present++;
+                }
             });
 
             // Processar Faltas Integrais e Gazeta
@@ -535,6 +550,17 @@
             rCont.innerHTML = `<table>
                 <thead><tr><th>Turma</th><th>Frequência</th></tr></thead>
                 <tbody>${ranking.map(r => `<tr><td>${r.name}</td><td style="font-weight:700; color:#3f51b5;">${r.freq}%</td></tr>`).join('')}</tbody>
+            </table>`;
+
+            // Ranking Disciplina
+            const sCont = document.getElementById('subject-ranking-container');
+            const rankingSub = Object.entries(subjects)
+                .map(([name, s]) => ({ name, freq: ((s.present / s.total) * 100).toFixed(0) }))
+                .sort((a, b) => b.freq - a.freq);
+
+            sCont.innerHTML = `<table>
+                <thead><tr><th>Disciplina</th><th>Frequência</th></tr></thead>
+                <tbody>${rankingSub.map(r => `<tr><td>${r.name}</td><td style="font-weight:700; color:#10b981;">${r.freq}%</td></tr>`).join('')}</tbody>
             </table>`;
 
             // Top Faltosos
