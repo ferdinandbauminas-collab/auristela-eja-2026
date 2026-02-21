@@ -139,7 +139,6 @@ const CustomSelect = ({
                                 <div style={{ position: 'relative', marginBottom: '20px', marginTop: (!title && !subtitle) ? '10px' : '0' }}>
                                     <Search size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#10b981' }} />
                                     <input
-                                        autoFocus
                                         type="text"
                                         placeholder="Buscar..."
                                         value={searchTerm}

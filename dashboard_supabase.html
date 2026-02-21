@@ -9,6 +9,8 @@
     <!-- Supabase Client CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- PDF Generation Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         body {
             font-family: 'Roboto', sans-serif;
@@ -255,6 +257,162 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        /* --- ESTILOS DO MODAL DE RELATÓRIO --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: #fff;
+            width: 100%;
+            max-width: 900px;
+            max-height: 90vh;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .modal-header {
+            padding: 20px;
+            background: #1a237e;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-body {
+            padding: 25px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: #3f51b5;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #475569;
+        }
+
+        .btn-report {
+            background: #10b981;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .report-section {
+            margin-bottom: 30px;
+            border-left: 4px solid #3f51b5;
+            padding-left: 15px;
+        }
+
+        .report-section h3 {
+            margin: 0 0 10px 0;
+            color: #1a237e;
+            font-size: 1.1rem;
+        }
+
+        .report-class-group {
+            margin-bottom: 15px;
+        }
+
+        .report-class-header {
+            font-weight: 700;
+            color: #64748b;
+            font-size: 0.9rem;
+            border-bottom: 1px solid #f1f5f9;
+            padding-bottom: 5px;
+            margin-bottom: 5px;
+        }
+
+        .report-student-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 5px;
+        }
+
+        .report-student-item {
+            font-size: 0.85rem;
+            padding: 4px 8px;
+            background: #f8fafc;
+            border-radius: 4px;
+        }
+
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+
+            #report-modal-content,
+            #report-modal-content * {
+                visibility: visible;
+            }
+
+            #report-modal-content {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                box-shadow: none;
+                max-height: none;
+            }
+
+            .modal-footer,
+            .modal-header .close-btn,
+            .modal-date-picker {
+                display: none !important;
+            }
+
+            .modal-header {
+                background: white !important;
+                color: black !important;
+                padding: 0;
+                border-bottom: 2px solid #333;
+            }
+
+            .modal-body {
+                padding: 0;
+            }
+        }
     </style>
 </head>
 
@@ -269,13 +427,20 @@
             <div>
                 <h1 style="text-transform: uppercase;">GESTÃO PEDAGÓGICA DE FREQUÊNCIA</h1>
                 <p style="color: #64748b; margin: 10px 0 0 0; letter-spacing: 1px; font-weight: 500;">Monitoramento
-                    Estratégico em Tempo Real (Supabase 2026)</p>
+                    Estratégico em Tempo Real</p>
                 <div id="data-corte-info"
                     style="font-size: 0.75rem; color: #3f51b5; margin-top: 10px; font-weight: 800; background: #ebf0ff; padding: 5px 15px; border-radius: 20px; display: inline-block;">
                     📅 ANALISANDO DESDE: <span id="display-data-corte">...</span>
                 </div>
             </div>
-            <div id="last-update" class="badge" style="margin-top: 15px;">Sincronizando...</div>
+
+            <div style="margin-top: 20px;">
+                <button class="btn btn-report" onclick="openReportModal()">
+                    📅 GERAR RELATÓRIOS DE FALTAS
+                </button>
+            </div>
+
+            <div id="last-update" class="badge">Sincronizando...</div>
         </header>
 
         <!-- Filtros removidos conforme solicitado -->
@@ -304,7 +469,7 @@
             </div>
 
             <div class="card">
-                <h2>🏃 Top 10 - Gastaria Seletiva (Gazeteiros)</h2>
+                <h2>🏃 Top 10 - Alunos fora de sala</h2>
                 <div id="top-gazeteiros-container">
                     <!-- Top 10 Gazeteiros -->
                 </div>
@@ -326,7 +491,7 @@
 
 
             <div class="card">
-                <h2>👨‍🏫 Gazeta por Professor (Aulas Perdidas)</h2>
+                <h2>👨‍🏫 AULAS PERDIDAS POR PROFESSOR</h2>
                 <div id="professor-ranking-container">
                     <!-- Tabela de Gazetas por Professor -->
                 </div>
@@ -351,6 +516,38 @@
                         <!-- Linhas dinâmicas -->
                     </tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE RELATÓRIO -->
+    <div id="report-modal" class="modal-overlay">
+        <div class="modal-content" id="report-modal-content">
+            <div class="modal-header">
+                <h2 style="margin:0; color:white;">Relatório Diário de Faltas</h2>
+                <span class="close-btn" onclick="closeReportModal()"
+                    style="cursor:pointer; font-size:2rem;">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="modal-date-picker"
+                    style="margin-bottom: 25px; background: #f1f5f9; padding: 15px; border-radius: 8px; display: flex; align-items: center; gap: 15px;">
+                    <label style="margin:0;">Selecionar Data:</label>
+                    <input type="date" id="report-date" onchange="generateReport()"
+                        style="padding: 10px; border-radius: 6px; border: 1px solid #cbd5e1; font-family: inherit;">
+                    <span style="font-size: 0.8rem; color: #64748b;">* Escolha um dia para listar alunos
+                        faltosos.</span>
+                </div>
+
+                <div id="report-results">
+                    <p style="text-align:center; color:#94a3b8; padding: 40px;">Selecione uma data para gerar o
+                        relatório.</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeReportModal()">Fechar</button>
+                <button class="btn btn-primary" onclick="previewPDF()" id="print-btn" style="display:none;">
+                    📄 SALVAR
+                </button>
             </div>
         </div>
     </div>
@@ -654,11 +851,14 @@
         function renderRecentTable(data) {
             const body = document.getElementById('recent-records-body');
             body.innerHTML = data.map(d => {
-                const dateClean = new Date(d.date).toLocaleString('pt-BR');
+                // Formatar data sem deslocamento de fuso horário (YYYY-MM-DD -> DD/MM/YYYY)
+                const [year, month, day] = d.date.split('T')[0].split('-');
+                const dateDisplay = `${day}/${month}/${year}`;
+
                 const isAbsent = d.status.toLowerCase() === 'absent' || d.status.toLowerCase() === 'faltou';
                 return `
                     <tr>
-                        <td style="font-size: 0.8rem; color: #64748b;">${dateClean}</td>
+                        <td style="font-size: 0.8rem; color: #64748b;">${dateDisplay}</td>
                         <td style="font-weight: 700;">${d.student_name}</td>
                         <td>${d.class_name}</td>
                         <td style="font-size: 0.8rem;">${d.discipline}</td>
@@ -667,6 +867,127 @@
                     </tr>
                 `;
             }).join('');
+        }
+
+        // --- LÓGICA DO RELATÓRIO ---
+        function openReportModal() {
+            document.getElementById('report-modal').style.display = 'flex';
+            // Obter data local no formato YYYY-MM-DD
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const localToday = `${year}-${month}-${day}`;
+
+            document.getElementById('report-date').value = localToday;
+            generateReport();
+        }
+
+        function closeReportModal() {
+            document.getElementById('report-modal').style.display = 'none';
+        }
+
+        function generateReport() {
+            const selectedDate = document.getElementById('report-date').value;
+            const resultsDiv = document.getElementById('report-results');
+            const printBtn = document.getElementById('print-btn');
+
+            if (!selectedDate) return;
+
+            // Filtrar faltas na data selecionada
+            const absences = allData.filter(d => {
+                const itemDate = d.date.split('T')[0];
+                const status = d.status.toLowerCase();
+                return itemDate === selectedDate && (status === 'absent' || status === 'faltou');
+            });
+
+            if (absences.length === 0) {
+                resultsDiv.innerHTML = `<p style="text-align:center; color:#94a3b8; padding: 40px;">Nenhum registro de falta encontrado para o dia ${selectedDate.split('-').reverse().join('/')}.</p>`;
+                printBtn.style.display = 'none';
+                return;
+            }
+
+            // Agrupar: Professor -> Turma -> Alunos (com mais detalhes)
+            const grouping = {};
+            absences.forEach(a => {
+                if (!grouping[a.teacher_name]) grouping[a.teacher_name] = {};
+                if (!grouping[a.teacher_name][a.class_name]) grouping[a.teacher_name][a.class_name] = [];
+                grouping[a.teacher_name][a.class_name].push({
+                    student: a.student_name,
+                    discipline: a.discipline || a.subject_name || 'N/A',
+                    fullDateTime: a.created_at ? new Date(a.created_at).toLocaleString('pt-BR') : '?'
+                });
+            });
+
+            // Renderizar HTML
+            let html = `<h2 style="text-align:center; color:#1a237e; margin-bottom: 25px;">Relação de Alunos Faltosos - ${selectedDate.split('-').reverse().join('/')}</h2>`;
+
+            // Ordenar professores alfabeticamente
+            const sortedTeachers = Object.keys(grouping).sort();
+
+            sortedTeachers.forEach(teacher => {
+                html += `<div class="report-section"><h3>👨‍🏫 Professor: ${teacher}</h3>`;
+
+                // Ordenar turmas
+                const sortedClasses = Object.keys(grouping[teacher]).sort();
+
+                sortedClasses.forEach(className => {
+                    html += `
+                        <div class="report-class-group">
+                            <div class="report-class-header">Turma: ${className}</div>
+                            <ul class="report-student-list" style="grid-template-columns: 1fr;">
+                                ${grouping[teacher][className].sort((a, b) => a.student.localeCompare(b.student)).map(item => `
+                                    <li class="report-student-item" style="display:flex; justify-content:space-between;">
+                                        <span><strong>${item.student}</strong> <small>(${item.discipline})</small></span>
+                                        <span style="color:#64748b; font-size: 0.7rem;">Registro em: ${item.fullDateTime}</span>
+                                    </li>
+                                `).join('')}
+                            </ul>
+                        </div>
+                    `;
+                });
+
+                html += `</div>`;
+            });
+
+            resultsDiv.innerHTML = html;
+            printBtn.style.display = 'block';
+        }
+
+        function previewPDF() {
+            const element = document.getElementById('report-results');
+            const selectedDate = document.getElementById('report-date').value.split('-').reverse().join('-');
+
+            const headerHtml = `
+                <div style="text-align:center; margin-bottom: 30px; border-bottom: 2px solid #1a237e; padding-bottom: 15px;">
+                    <h1 style="color:#1a237e; margin:0; font-size: 22pt; text-transform: uppercase;">CETI AURISTELA SOARES</h1>
+                    <h2 style="color:#3f51b5; margin:10px 0 0 0; font-size: 16pt;">EJA TEC 2026 - RELATÓRIO DIÁRIO DE FALTAS</h2>
+                    <p style="margin: 10px 0 0 0; color: #64748b; font-weight: bold;">DATA DO RELATÓRIO: ${selectedDate.split('-').reverse().join('/')}</p>
+                </div>
+            `;
+
+            const footerHtml = `
+                <div style="margin-top: 30px; text-align: center; font-size: 0.8rem; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 10px;">
+                    Documento gerado em ${new Date().toLocaleString('pt-BR')}
+                </div>
+            `;
+
+            // Criar elemento temporário com todo o conteúdo
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = headerHtml + element.innerHTML + footerHtml;
+            tempDiv.style.padding = '20px';
+            tempDiv.style.fontFamily = 'Roboto, sans-serif';
+
+            const opt = {
+                margin: 10,
+                filename: `relatorio_faltas_${selectedDate}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            // Gerar e baixar o PDF
+            html2pdf().set(opt).from(tempDiv).save();
         }
 
         init();

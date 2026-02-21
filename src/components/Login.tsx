@@ -124,7 +124,7 @@ const Login = ({ onLogin }: Props) => {
                     hideTrigger={true}
                     title="IDENTIFICAÇÃO"
                     subtitle="Selecione seu nome da lista"
-                    showSearch={true}
+                    showSearch={false}
                 />
             </AnimatePresence>
 
