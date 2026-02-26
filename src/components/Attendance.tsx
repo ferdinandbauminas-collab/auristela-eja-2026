@@ -276,9 +276,9 @@ const Attendance = ({ teacher, onLogout }: Props) => {
                                     width: '100%', padding: '24px 24px', borderRadius: '32px',
                                     background: selectedDiscipline ? 'rgba(255,255,255,0.4)' : 'white',
                                     cursor: 'pointer', textAlign: 'left',
-                                    boxShadow: selectedDiscipline ? 'none' : '0 12px 30px -5px rgba(0,0,0,0.08)',
+                                    boxShadow: selectedDiscipline ? 'none' : '0 15px 35px -5px rgba(59, 130, 246, 0.25)',
                                     display: 'flex', alignItems: 'center', gap: '20px',
-                                    border: selectedDiscipline ? '1px dashed rgba(0,0,0,0.1)' : '1px solid rgba(0,0,0,0.02)',
+                                    border: selectedDiscipline ? '1px dashed rgba(0,0,0,0.1)' : '2px solid #3b82f6',
                                     opacity: selectedDiscipline ? 0.6 : 1,
                                     transition: 'all 0.3s ease'
                                 }}
