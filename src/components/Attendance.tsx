@@ -29,6 +29,7 @@ const Attendance = ({ teacher, onLogout }: Props) => {
     const [isDisciplineModalOpen, setIsDisciplineModalOpen] = useState(false);
     const [isClassModalOpen, setIsClassModalOpen] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
+    const [isDoubleLesson, setIsDoubleLesson] = useState(false);
 
     useEffect(() => {
         async function loadData() {
@@ -64,7 +65,7 @@ const Attendance = ({ teacher, onLogout }: Props) => {
         if (!selectedDiscipline || !selectedClass) return;
         setSaving(true);
 
-        const records: AttendanceRecord[] = students.map(s => ({
+        let records: AttendanceRecord[] = students.map(s => ({
             teacher_name: teacher.name,
             discipline: selectedDiscipline.name,
             class_name: selectedClass,
@@ -72,6 +73,10 @@ const Attendance = ({ teacher, onLogout }: Props) => {
             status: attendance[s.id],
             date: new Date().toISOString().split('T')[0]
         }));
+
+        if (isDoubleLesson) {
+            records = [...records, ...records];
+        }
 
         try {
             const { error } = await supabase.from('ef_attendance').insert(records);
@@ -188,7 +193,7 @@ const Attendance = ({ teacher, onLogout }: Props) => {
 
                         <div>
                             <h2 style={{ fontSize: '1.5rem', color: '#064e3b', fontWeight: 800, marginBottom: '8px' }}>
-                                Frequência Enviada!
+                                {isDoubleLesson ? '2 Aulas Registradas!' : 'Frequência Enviada!'}
                             </h2>
                             <p style={{ color: '#64748b', fontSize: '0.9rem' }}>
                                 Os dados foram salvos com sucesso no banco de dados.
@@ -316,6 +321,49 @@ const Attendance = ({ teacher, onLogout }: Props) => {
                                     </h2>
                                 </div>
                                 <ChevronRight size={22} color="#cbd5e1" />
+                            </motion.button>
+
+                            <motion.button
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                whileTap={{ scale: 0.98 }}
+                                onClick={() => selectedClass && setIsDoubleLesson(!isDoubleLesson)}
+                                style={{
+                                    width: '100%', padding: '20px 24px', borderRadius: '32px',
+                                    background: isDoubleLesson ? 'rgba(99, 102, 241, 0.05)' : 'white',
+                                    cursor: selectedClass ? 'pointer' : 'not-allowed',
+                                    textAlign: 'left',
+                                    boxShadow: selectedClass ? '0 10px 25px -5px rgba(0,0,0,0.05)' : 'none',
+                                    display: 'flex', alignItems: 'center', gap: '20px',
+                                    opacity: selectedClass ? 1 : 0.5,
+                                    border: isDoubleLesson ? '2px solid #6366f1' : '2px solid transparent',
+                                    transition: 'all 0.2s'
+                                }}
+                            >
+                                <div style={{
+                                    width: '56px', height: '56px', background: isDoubleLesson ? 'rgba(99, 102, 241, 0.2)' : 'rgba(99, 102, 241, 0.05)',
+                                    borderRadius: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    transition: 'all 0.2s'
+                                }}>
+                                    <div style={{ position: 'relative' }}>
+                                        <CalendarIcon size={28} color="#6366f1" />
+                                        {isDoubleLesson && <div style={{ position: 'absolute', top: -4, right: -4, background: '#6366f1', color: 'white', fontSize: '10px', width: '16px', height: '16px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>2</div>}
+                                    </div>
+                                </div>
+                                <div style={{ flex: 1 }}>
+                                    <p style={{ color: '#94a3b8', fontSize: '0.8rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '4px', letterSpacing: '0.5px' }}>Tipo de Aula</p>
+                                    <h2 style={{ fontSize: '1.25rem', color: isDoubleLesson ? '#6366f1' : '#064e3b', fontWeight: 900, lineHeight: 1.2 }}>
+                                        {isDoubleLesson ? 'AULA DUPLA (2X)' : 'AULA NORMAL (1X)'}
+                                    </h2>
+                                </div>
+                                <div style={{
+                                    width: '24px', height: '24px', borderRadius: '12px',
+                                    border: `2px solid ${isDoubleLesson ? '#6366f1' : '#cbd5e1'}`,
+                                    background: isDoubleLesson ? '#6366f1' : 'transparent',
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center'
+                                }}>
+                                    {isDoubleLesson && <Check size={14} color="white" strokeWidth={4} />}
+                                </div>
                             </motion.button>
                         </div>
 
