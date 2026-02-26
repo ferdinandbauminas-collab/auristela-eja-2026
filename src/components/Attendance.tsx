@@ -73,15 +73,23 @@ const Attendance = ({ teacher, onLogout }: Props) => {
             date: new Date().toISOString().split('T')[0]
         }));
 
-        const { error } = await supabase.from('ef_attendance').insert(records);
-        setSaving(false);
+        try {
+            const { error } = await supabase.from('ef_attendance').insert(records);
 
-        if (!error) {
-            setIsSuccess(true);
-            setIsWizardMode(false);
-            setCurrentStudentIndex(0);
-        } else {
-            alert('Falha ao salvar: ' + error.message);
+            if (!error) {
+                // Transição imediata para sucesso e scroll para o topo
+                setIsSuccess(true);
+                setIsWizardMode(false);
+                setCurrentStudentIndex(0);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                alert('Falha ao salvar: ' + error.message);
+            }
+        } catch (err) {
+            console.error('Erro ao salvar:', err);
+            alert('Erro inesperado ao salvar os dados.');
+        } finally {
+            setSaving(false);
         }
     };
 
@@ -146,7 +154,7 @@ const Attendance = ({ teacher, onLogout }: Props) => {
 
             {!isWizardMode && !isSuccess && <div style={{ flex: 1 }} />}
 
-            <AnimatePresence mode="wait">
+            <AnimatePresence>
                 {isSuccess ? (
                     <motion.div
                         key="success-step"
@@ -396,7 +404,7 @@ const Attendance = ({ teacher, onLogout }: Props) => {
                                     Chamada em Andamento
                                 </p>
                                 <h2 style={{
-                                    fontSize: '1.4rem',
+                                    fontSize: '1.25rem',
                                     color: '#064e3b',
                                     fontWeight: 900,
                                     margin: 0,
@@ -439,7 +447,7 @@ const Attendance = ({ teacher, onLogout }: Props) => {
                             </div>
 
                             {/* Student Info Container */}
-                            <AnimatePresence mode="wait">
+                            <AnimatePresence>
                                 <motion.div
                                     key={currentStudent?.id}
                                     initial={{ opacity: 0, x: 20 }}
@@ -476,13 +484,13 @@ const Attendance = ({ teacher, onLogout }: Props) => {
 
                                     <div style={{ width: '100%', padding: '0 10px' }}>
                                         <h2 style={{
-                                            fontSize: '2rem',
+                                            fontSize: '1.25rem',
                                             color: '#000000',
                                             fontWeight: 900,
-                                            lineHeight: 1.1,
+                                            lineHeight: 1.2,
                                             margin: 0,
                                             display: '-webkit-box',
-                                            WebkitLineClamp: 2,
+                                            WebkitLineClamp: 3,
                                             WebkitBoxOrient: 'vertical',
                                             overflow: 'hidden',
                                             textOverflow: 'ellipsis',
