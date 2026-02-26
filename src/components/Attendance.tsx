@@ -274,10 +274,13 @@ const Attendance = ({ teacher, onLogout }: Props) => {
                                 onClick={() => setIsDisciplineModalOpen(true)}
                                 style={{
                                     width: '100%', padding: '24px 24px', borderRadius: '32px',
-                                    background: 'white', cursor: 'pointer', textAlign: 'left',
-                                    boxShadow: '0 12px 30px -5px rgba(0,0,0,0.08)',
+                                    background: selectedDiscipline ? 'rgba(255,255,255,0.4)' : 'white',
+                                    cursor: 'pointer', textAlign: 'left',
+                                    boxShadow: selectedDiscipline ? 'none' : '0 12px 30px -5px rgba(0,0,0,0.08)',
                                     display: 'flex', alignItems: 'center', gap: '20px',
-                                    border: '1px solid rgba(0,0,0,0.02)'
+                                    border: selectedDiscipline ? '1px dashed rgba(0,0,0,0.1)' : '1px solid rgba(0,0,0,0.02)',
+                                    opacity: selectedDiscipline ? 0.6 : 1,
+                                    transition: 'all 0.3s ease'
                                 }}
                             >
                                 <div style={{
@@ -302,13 +305,18 @@ const Attendance = ({ teacher, onLogout }: Props) => {
                                 onClick={() => selectedDiscipline && setIsClassModalOpen(true)}
                                 style={{
                                     width: '100%', padding: '24px 24px', borderRadius: '32px',
-                                    background: selectedDiscipline ? 'white' : 'rgba(0,0,0,0.02)',
+                                    background: selectedDiscipline ? (selectedClass ? 'rgba(255,255,255,0.4)' : 'white') : 'rgba(0,0,0,0.02)',
                                     cursor: selectedDiscipline ? 'pointer' : 'not-allowed',
                                     textAlign: 'left',
-                                    boxShadow: selectedDiscipline ? '0 12px 30px -5px rgba(0,0,0,0.08)' : 'none',
+                                    boxShadow: (selectedDiscipline && !selectedClass)
+                                        ? '0 15px 35px -5px rgba(59, 130, 246, 0.25)'
+                                        : (selectedClass ? 'none' : 'none'),
                                     display: 'flex', alignItems: 'center', gap: '20px',
-                                    opacity: selectedDiscipline ? 1 : 0.5,
-                                    border: '1px solid rgba(0,0,0,0.02)'
+                                    opacity: selectedDiscipline ? (selectedClass ? 0.6 : 1) : 0.4,
+                                    border: (selectedDiscipline && !selectedClass)
+                                        ? '2px solid #3b82f6'
+                                        : '1px solid rgba(0,0,0,0.02)',
+                                    transition: 'all 0.3s ease'
                                 }}
                             >
                                 <div style={{
@@ -340,7 +348,7 @@ const Attendance = ({ teacher, onLogout }: Props) => {
                                         boxShadow: isDoubleLesson ? '0 12px 30px -5px rgba(99, 102, 241, 0.2)' : '0 12px 30px -5px rgba(0,0,0,0.08)',
                                         display: 'flex', alignItems: 'center', gap: '20px',
                                         border: isDoubleLesson ? '2px solid #6366f1' : '1px solid rgba(0,0,0,0.02)',
-                                        transition: 'all 0.2s'
+                                        transition: 'all 0.3s ease'
                                     }}
                                 >
                                     <div style={{
