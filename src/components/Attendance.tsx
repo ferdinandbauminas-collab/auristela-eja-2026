@@ -447,7 +447,7 @@ const Attendance = ({ teacher, onLogout }: Props) => {
                             </div>
 
                             {/* Student Info Container */}
-                            <AnimatePresence>
+                            <AnimatePresence mode="wait">
                                 <motion.div
                                     key={currentStudent?.id}
                                     initial={{ opacity: 0, x: 20 }}
