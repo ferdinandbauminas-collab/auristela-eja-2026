@@ -1,5 +1,5 @@
 -- 🚀 BACKUP ATUALIZADO EJA 2026
--- Gerado automaticamente em: 26/02/2026, 12:48:08
+-- Gerado automaticamente em: 26/02/2026, 14:46:42
 
 BEGIN;
 
@@ -31,6 +31,7 @@ INSERT INTO ef_teachers (id, name, subject, avatar) VALUES ('691c895c-51f4-4083-
 INSERT INTO ef_teachers (id, name, subject, avatar) VALUES ('02a105dc-c1ef-4f05-96d0-9103e92a8a6b', 'ALEXSANDRA MARIA LINARD PAES LANDIM', 'LÍNGUA PORTUGUESA', NULL);
 INSERT INTO ef_teachers (id, name, subject, avatar) VALUES ('franciscojr', 'FRANCISCO JUNIOR', 'QUÍMICA', NULL);
 INSERT INTO ef_teachers (id, name, subject, avatar) VALUES ('joanadard', 'JOANA DARC', 'ARTE', NULL);
+INSERT INTO ef_teachers (id, name, subject, avatar) VALUES ('salomao', 'SALOMÃO', 'EMPREENDEDORISMO PARA TI', NULL);
 
 -- 📋 DADOS DA TABELA ef_classes
 INSERT INTO ef_classes (id, name, grade, teacher_id) VALUES ('bf4d5e79-a419-4e54-a00e-da52accb799d', 'LINGUA PORTUGUESA', 'MÓDULO ALTE IA', '39c4758a-eaef-4a41-8214-d37741ea57dd');
@@ -185,6 +186,9 @@ INSERT INTO ef_classes (id, name, grade, teacher_id) VALUES ('017d9775-0b3b-4af1
 INSERT INTO ef_classes (id, name, grade, teacher_id) VALUES ('franciscojr.', 'QUÍMICA', 'MÓDULO INFO IA', 'franciscojr');
 INSERT INTO ef_classes (id, name, grade, teacher_id) VALUES ('joanadard_arte_infoiiia', 'ARTE', 'MÓDULO INFO IIIA', 'joanadard');
 INSERT INTO ef_classes (id, name, grade, teacher_id) VALUES ('joanadard_arte_alteia', 'ARTE', 'MÓDULO ALTE IA', 'joanadard');
+INSERT INTO ef_classes (id, name, grade, teacher_id) VALUES ('salomao_emp_infovd', 'EMPREENDEDORISMO PARA TI', 'MÓDULO INFO VD', 'salomao');
+INSERT INTO ef_classes (id, name, grade, teacher_id) VALUES ('salomao_pds_infova', 'PROJETO DE DESENVOLVIMENTO DE SISTEMAS', 'MÓDULO INFO VA', 'salomao');
+INSERT INTO ef_classes (id, name, grade, teacher_id) VALUES ('salomao_eo_infoiiib', 'ELETIVA ORIENTADA', 'MÓDULO INFO IIIB', 'salomao');
 
 -- 📋 DADOS DA TABELA ef_students
 INSERT INTO ef_students (id, name, class_id) VALUES ('62056161-6855-44e7-a60d-9d65179092c9', 'ALINY MARIA DOS SANTOS SANTANA', 'MÓDULO INFO IA');
