@@ -205,10 +205,11 @@ const Attendance = ({ teacher, onLogout }: Props) => {
                             background: 'white',
                             borderRadius: '24px',
                             padding: '20px',
-                            border: '1px solid #f1f5f9',
+                            border: '1px solid rgba(0,0,0,0.05)',
                             display: 'flex',
                             flexDirection: 'column',
-                            gap: '16px'
+                            gap: '16px',
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.03)'
                         }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <span style={{ color: '#94a3b8', fontSize: '0.8rem', fontWeight: 600 }}>DATA</span>
@@ -272,10 +273,11 @@ const Attendance = ({ teacher, onLogout }: Props) => {
                                 whileTap={{ scale: 0.98 }}
                                 onClick={() => setIsDisciplineModalOpen(true)}
                                 style={{
-                                    width: '100%', padding: '24px 24px', borderRadius: '32px', border: 'none',
+                                    width: '100%', padding: '24px 24px', borderRadius: '32px',
                                     background: 'white', cursor: 'pointer', textAlign: 'left',
-                                    boxShadow: '0 10px 25px -5px rgba(0,0,0,0.05)',
-                                    display: 'flex', alignItems: 'center', gap: '20px'
+                                    boxShadow: '0 12px 30px -5px rgba(0,0,0,0.08)',
+                                    display: 'flex', alignItems: 'center', gap: '20px',
+                                    border: '1px solid rgba(0,0,0,0.02)'
                                 }}
                             >
                                 <div style={{
@@ -299,13 +301,14 @@ const Attendance = ({ teacher, onLogout }: Props) => {
                                 whileTap={{ scale: 0.98 }}
                                 onClick={() => selectedDiscipline && setIsClassModalOpen(true)}
                                 style={{
-                                    width: '100%', padding: '24px 24px', borderRadius: '32px', border: 'none',
+                                    width: '100%', padding: '24px 24px', borderRadius: '32px',
                                     background: selectedDiscipline ? 'white' : 'rgba(0,0,0,0.02)',
                                     cursor: selectedDiscipline ? 'pointer' : 'not-allowed',
                                     textAlign: 'left',
-                                    boxShadow: selectedDiscipline ? '0 10px 25px -5px rgba(0,0,0,0.05)' : 'none',
+                                    boxShadow: selectedDiscipline ? '0 12px 30px -5px rgba(0,0,0,0.08)' : 'none',
                                     display: 'flex', alignItems: 'center', gap: '20px',
-                                    opacity: selectedDiscipline ? 1 : 0.5
+                                    opacity: selectedDiscipline ? 1 : 0.5,
+                                    border: '1px solid rgba(0,0,0,0.02)'
                                 }}
                             >
                                 <div style={{
@@ -334,9 +337,9 @@ const Attendance = ({ teacher, onLogout }: Props) => {
                                         background: isDoubleLesson ? 'rgba(99, 102, 241, 0.05)' : 'white',
                                         cursor: 'pointer',
                                         textAlign: 'left',
-                                        boxShadow: '0 10px 25px -5px rgba(0,0,0,0.05)',
+                                        boxShadow: isDoubleLesson ? '0 12px 30px -5px rgba(99, 102, 241, 0.2)' : '0 12px 30px -5px rgba(0,0,0,0.08)',
                                         display: 'flex', alignItems: 'center', gap: '20px',
-                                        border: isDoubleLesson ? '2px solid #6366f1' : '2px solid transparent',
+                                        border: isDoubleLesson ? '2px solid #6366f1' : '1px solid rgba(0,0,0,0.02)',
                                         transition: 'all 0.2s'
                                     }}
                                 >
