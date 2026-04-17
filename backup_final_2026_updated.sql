@@ -27,7 +27,7 @@ INSERT INTO ef_teachers (id, name, subject, avatar) VALUES ('5d327943-27ea-4a22-
 INSERT INTO ef_teachers (id, name, subject, avatar) VALUES ('015a3da3-4abe-409b-ba98-25386247fc39', 'DENILSON', 'BANCO DE DADOS', NULL);
 INSERT INTO ef_teachers (id, name, subject, avatar) VALUES ('56294fce-5c07-4a75-b353-4d378ccb3524', 'JARBAS FERNANDES DE OLIVEIRA', 'PROJETO DE APRENDIZAGEM INTERDISCIPLINAR', NULL);
 INSERT INTO ef_teachers (id, name, subject, avatar) VALUES ('237a383c-55f9-454c-bba6-e56737079c6a', 'ELLYDA FERNANDA', 'LINGUA ESPANHOLA', NULL);
-INSERT INTO ef_teachers (id, name, subject, avatar) VALUES ('691c895c-51f4-4083-8fe4-24f9a6638f53', 'ADELIA MARIA VIANA PINHEIRO', 'EDUCAÇÃO FÍSICA', NULL);
+INSERT INTO ef_teachers (id, name, subject, avatar) VALUES ('691c895c-51f4-4083-8fe4-24f9a6638f53', 'CARLOS AUGUSTO', 'EDUCAÇÃO FÍSICA', NULL);
 INSERT INTO ef_teachers (id, name, subject, avatar) VALUES ('02a105dc-c1ef-4f05-96d0-9103e92a8a6b', 'ALEXSANDRA MARIA LINARD PAES LANDIM', 'LÍNGUA PORTUGUESA', NULL);
 INSERT INTO ef_teachers (id, name, subject, avatar) VALUES ('franciscojr', 'FRANCISCO JUNIOR', 'QUÍMICA', NULL);
 INSERT INTO ef_teachers (id, name, subject, avatar) VALUES ('joanadard', 'JOANA DARC', 'ARTE', NULL);

@@ -21,7 +21,7 @@ const Attendance = ({ teacher, onLogout }: Props) => {
     const [students, setStudents] = useState<Student[]>([]);
     const [attendance, setAttendance] = useState<Record<string, 'present' | 'absent'>>({});
     const [saving, setSaving] = useState(false);
-    const [today] = useState(new Date().toLocaleDateString('pt-BR'));
+    const [today] = useState(new Date().toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' }));
 
     // Wizard & Modal states
     const [isWizardMode, setIsWizardMode] = useState(false);
@@ -65,13 +65,23 @@ const Attendance = ({ teacher, onLogout }: Props) => {
         if (!selectedDiscipline || !selectedClass) return;
         setSaving(true);
 
+        // Força a data para o fuso horário de Brasília (BRT)
+        // Utilizamos o padrão 'en-CA' que garante o formato universal YYYY-MM-DD 
+        // em qualquer navegador ou celular, resolvendo problemas de fuso no envio.
+        const formattedDate = new Intl.DateTimeFormat('en-CA', {
+            timeZone: 'America/Sao_Paulo',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+        }).format(new Date());
+
         let records: AttendanceRecord[] = students.map(s => ({
             teacher_name: teacher.name,
             discipline: selectedDiscipline.name,
             class_name: selectedClass,
             student_name: s.name,
             status: attendance[s.id],
-            date: new Date().toISOString().split('T')[0]
+            date: formattedDate
         }));
 
         if (isDoubleLesson) {

@@ -22,7 +22,7 @@ INSERT INTO ef_teachers (id, name, subject) VALUES ('63ddcc96-321a-4b51-9b1d-101
 INSERT INTO ef_teachers (id, name, subject) VALUES ('39bb3cce-cd35-4d58-a126-0aca76aaa54d', 'DENILSON', 'BANCO DE DADOS');
 INSERT INTO ef_teachers (id, name, subject) VALUES ('dfbd3af9-2162-4eea-9392-49a2f8eeb916', 'JARBAS FERNANDES DE OLIVEIRA', 'PROJETO DE APRENDIZAGEM INTERDISCIPLINAR');
 INSERT INTO ef_teachers (id, name, subject) VALUES ('37b2944b-a0b0-4f87-a6e6-f8dfa45b28e8', 'ELLYDA FERNANDA', 'LINGUA ESPANHOLA');
-INSERT INTO ef_teachers (id, name, subject) VALUES ('a42fa18d-853b-4539-a7a3-555fe707793b', 'ADELIA MARIA VIANA PINHEIRO', 'EDUCAÇÃO FÍSICA');
+INSERT INTO ef_teachers (id, name, subject) VALUES ('carlosaugusto', 'CARLOS AUGUSTO', 'EDUCAÇÃO FÍSICA');
 INSERT INTO ef_teachers (id, name, subject) VALUES ('52c189c1-3870-414e-8afa-76d52aa363aa', 'ALEXSANDRA MARIA LINARD PAES LANDIM', 'LÍNGUA PORTUGUESA');
 INSERT INTO ef_classes (id, name, grade, teacher_id) VALUES ('da673771-66a5-4f9a-83b4-51bcf6e39a69', 'LINGUA PORTUGUESA', 'MÓDULO ALTE IA', '5b03a636-be5c-47c1-a4ca-9ff9610a3882');
 INSERT INTO ef_classes (id, name, grade, teacher_id) VALUES ('80ac4b7e-a81e-4ea1-8fab-c261aadc38f6', 'LINGUA PORTUGUESA', 'MÓDULO MARK IA', '5b03a636-be5c-47c1-a4ca-9ff9610a3882');
@@ -129,7 +129,7 @@ INSERT INTO ef_classes (id, name, grade, teacher_id) VALUES ('340000c2-1ed2-4dd3
 INSERT INTO ef_classes (id, name, grade, teacher_id) VALUES ('dff6a275-8f34-4572-bd28-e554adf54560', 'ARTE', 'MÓDULO INFO III', 'cd3d415c-296e-4fc1-bb5b-8d2026cfa58f');
 INSERT INTO ef_classes (id, name, grade, teacher_id) VALUES ('528c952a-b95c-43c7-9718-120293e3cb25', 'ELETIVA ORIENTADA', 'MÓDULO INFO VB', '63ddcc96-321a-4b51-9b1d-1019ab01727a');
 INSERT INTO ef_classes (id, name, grade, teacher_id) VALUES ('66fcd6bd-e031-43c0-b44f-16c3145c8a1f', 'ELETIVA ORIENTADA', 'MÓDULO INFO VC', '63ddcc96-321a-4b51-9b1d-1019ab01727a');
-INSERT INTO ef_classes (id, name, grade, teacher_id) VALUES ('0cc2d9ab-c995-4562-9174-1b7921d07743', 'ELETIVA ORIENTADA', 'MÓDULO INFO VD', '63ddcc96-321a-4b51-9b1d-1019ab01727a');
+INSERT INTO ef_classes (id, name, grade, teacher_id) VALUES ('0cc2d9ab-c995-4562-9174-1b7921d07743', 'ELETIVA ORIENTADA', 'MÓDULO INFO VD', NULL);
 INSERT INTO ef_classes (id, name, grade, teacher_id) VALUES ('088a164f-6c0e-44fb-a007-ac6513d88ccc', 'ELETIVA ORIENTADA', 'MÓDULO MARK IA', '63ddcc96-321a-4b51-9b1d-1019ab01727a');
 INSERT INTO ef_classes (id, name, grade, teacher_id) VALUES ('5e19d5b5-0ceb-44f9-af13-ed2ace80b31a', 'INTRODUÇÃO AO MARKETING', 'MÓDULO INFO VB', '63ddcc96-321a-4b51-9b1d-1019ab01727a');
 INSERT INTO ef_classes (id, name, grade, teacher_id) VALUES ('2c4b56f2-30d3-4608-9b64-3e90c4da4f10', 'INTRODUÇÃO AO MARKETING', 'MÓDULO INFO VC', '63ddcc96-321a-4b51-9b1d-1019ab01727a');
@@ -169,8 +169,8 @@ INSERT INTO ef_classes (id, name, grade, teacher_id) VALUES ('54268b5b-5fd7-4ed4
 INSERT INTO ef_classes (id, name, grade, teacher_id) VALUES ('8194166e-e34c-498f-896e-174a5b8702a9', 'PROJETO DE APRENDIZAGEM INTERDISCIPLINAR', 'MÓDULO INFO VD', 'dfbd3af9-2162-4eea-9392-49a2f8eeb916');
 INSERT INTO ef_classes (id, name, grade, teacher_id) VALUES ('9b960f3c-0337-495e-9c02-02d3e698dc55', 'LINGUA ESPANHOLA', 'MÓDULO INFO VA', '37b2944b-a0b0-4f87-a6e6-f8dfa45b28e8');
 INSERT INTO ef_classes (id, name, grade, teacher_id) VALUES ('e47e6d32-4d76-40a7-9f1f-c63c9efdf2ce', 'LINGUA ESPANHOLA', 'MÓDULO INFO VB', '37b2944b-a0b0-4f87-a6e6-f8dfa45b28e8');
-INSERT INTO ef_classes (id, name, grade, teacher_id) VALUES ('148c3d7d-79f4-446e-a1e1-901702f2bd39', 'EDUCAÇÃO FÍSICA', 'MÓDULO ALTE IA', 'a42fa18d-853b-4539-a7a3-555fe707793b');
-INSERT INTO ef_classes (id, name, grade, teacher_id) VALUES ('3788b6ef-3ad5-424e-a35e-c52a82e42dbc', 'EDUCAÇÃO FÍSICA', 'MÓDULO INFO IA', 'a42fa18d-853b-4539-a7a3-555fe707793b');
+INSERT INTO ef_classes (id, name, grade, teacher_id) VALUES ('148c3d7d-79f4-446e-a1e1-901702f2bd39', 'EDUCAÇÃO FÍSICA', 'MÓDULO ALTE IA', 'carlosaugusto');
+INSERT INTO ef_classes (id, name, grade, teacher_id) VALUES ('3788b6ef-3ad5-424e-a35e-c52a82e42dbc', 'EDUCAÇÃO FÍSICA', 'MÓDULO INFO IA', 'carlosaugusto');
 INSERT INTO ef_classes (id, name, grade, teacher_id) VALUES ('ca3be888-a5f0-4a61-9581-d2cb0ed7b11f', 'LÍNGUA PORTUGUESA', 'MÓDULO ALTE IA', '5b03a636-be5c-47c1-a4ca-9ff9610a3882');
 INSERT INTO ef_classes (id, name, grade, teacher_id) VALUES ('0ff1fdc2-005d-4e73-9205-6e5622ab56dd', 'LÍNGUA PORTUGUESA', 'MÓDULO MARK IA', '5b03a636-be5c-47c1-a4ca-9ff9610a3882');
 INSERT INTO ef_classes (id, name, grade, teacher_id) VALUES ('859f004c-9662-48d8-8b46-d1063e6713f0', 'LÍNGUA PORTUGUESA', 'MÓDULO INFO IA', '52c189c1-3870-414e-8afa-76d52aa363aa');

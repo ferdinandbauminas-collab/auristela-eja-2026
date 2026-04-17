@@ -1,0 +1,218 @@
+[
+  {
+    "slot_number": 1,
+    "class_group": "MOD I A",
+    "discipline": "MATEMÁTICA",
+    "teacher_name": "GEMILSON"
+  },
+  {
+    "slot_number": 2,
+    "class_group": "MOD I A",
+    "discipline": "MATEMÁTICA",
+    "teacher_name": "GEMILSON"
+  },
+  {
+    "slot_number": 3,
+    "class_group": "MOD I A",
+    "discipline": "HISTÓRIA",
+    "teacher_name": "FRANCISCA DA SILVA SOUSA"
+  },
+  {
+    "slot_number": 4,
+    "class_group": "MOD I A",
+    "discipline": "LÍNGUA PORTUGUESA",
+    "teacher_name": "ALEXSANDRA MARIA LINARD PAES LANDIM"
+  },
+  {
+    "slot_number": 1,
+    "class_group": "MOD I A ALT",
+    "discipline": "HISTÓRIA",
+    "teacher_name": "FRANCISCA DA SILVA SOUSA"
+  },
+  {
+    "slot_number": 2,
+    "class_group": "MOD I A ALT",
+    "discipline": "FÍSICA",
+    "teacher_name": "EDNARDO FERREIRA DE SOUSA"
+  },
+  {
+    "slot_number": 3,
+    "class_group": "MOD I A ALT",
+    "discipline": "FÍSICA",
+    "teacher_name": "EDNARDO FERREIRA DE SOUSA"
+  },
+  {
+    "slot_number": 4,
+    "class_group": "MOD I A ALT",
+    "discipline": "MATEMÁTICA",
+    "teacher_name": "GEMILSON"
+  },
+  {
+    "slot_number": 1,
+    "class_group": "MOD I A MARK",
+    "discipline": "FÍSICA",
+    "teacher_name": "EDNARDO FERREIRA DE SOUSA"
+  },
+  {
+    "slot_number": 2,
+    "class_group": "MOD I A MARK",
+    "discipline": "FDA",
+    "teacher_name": "GERSON DOS SANTOS"
+  },
+  {
+    "slot_number": 3,
+    "class_group": "MOD I A MARK",
+    "discipline": "MATEMÁTICA",
+    "teacher_name": "GEMILSON"
+  },
+  {
+    "slot_number": 4,
+    "class_group": "MOD I A MARK",
+    "discipline": "ELETIVA",
+    "teacher_name": "GERSON DOS SANTOS"
+  },
+  {
+    "slot_number": 1,
+    "class_group": "MOD III A",
+    "discipline": "LÍNGUA PORTUGUESA",
+    "teacher_name": "FRANCINEUDA DA SILVA SOUSA"
+  },
+  {
+    "slot_number": 2,
+    "class_group": "MOD III A",
+    "discipline": "LÍNGUA PORTUGUESA",
+    "teacher_name": "FRANCINEUDA DA SILVA SOUSA"
+  },
+  {
+    "slot_number": 3,
+    "class_group": "MOD III A",
+    "discipline": "REDES DE COMPUTADORES",
+    "teacher_name": "MARCOS AURELIO MATOS DOS SANTOS"
+  },
+  {
+    "slot_number": 4,
+    "class_group": "MOD III A",
+    "discipline": "BANCO DE DADOS",
+    "teacher_name": "DENILSON DAVID DA SILVA SANTOS"
+  },
+  {
+    "slot_number": 1,
+    "class_group": "MOD III B",
+    "discipline": "REDES DE COMPUTADORES",
+    "teacher_name": "DENILSON DAVID DA SILVA SANTOS"
+  },
+  {
+    "slot_number": 2,
+    "class_group": "MOD III B",
+    "discipline": "REDES DE COMPUTADORES",
+    "teacher_name": "DENILSON DAVID DA SILVA SANTOS"
+  },
+  {
+    "slot_number": 3,
+    "class_group": "MOD III B",
+    "discipline": "BANCO DE DADOS",
+    "teacher_name": "DENILSON DAVID DA SILVA SANTOS"
+  },
+  {
+    "slot_number": 4,
+    "class_group": "MOD III B",
+    "discipline": "PROJETO DE APRENDIZAGEM INTERDISCIPLINAR",
+    "teacher_name": "GERSON DOS SANTOS"
+  },
+  {
+    "slot_number": 1,
+    "class_group": "MOD V A",
+    "discipline": "PROJETO DE DESENVOLVIMENTO DE SISTEMAS",
+    "teacher_name": "MARCOS AURELIO MATOS DOS SANTOS"
+  },
+  {
+    "slot_number": 2,
+    "class_group": "MOD V A",
+    "discipline": "PROJETO DE APRENDIZAGEM INTERDISCIPLINAR",
+    "teacher_name": "MARCOS AURELIO MATOS DOS SANTOS"
+  },
+  {
+    "slot_number": 3,
+    "class_group": "MOD V A",
+    "discipline": "LÍNGUA PORTUGUESA",
+    "teacher_name": "FRANCINEUDA DA SILVA SOUSA"
+  },
+  {
+    "slot_number": 4,
+    "class_group": "MOD V A",
+    "discipline": "EMPREENDEDORISMO PARA TI",
+    "teacher_name": "MARCOS AURELIO MATOS DOS SANTOS"
+  },
+  {
+    "slot_number": 1,
+    "class_group": "MOD V B",
+    "discipline": "ELETIVA",
+    "teacher_name": "GERSON DOS SANTOS"
+  },
+  {
+    "slot_number": 2,
+    "class_group": "MOD V B",
+    "discipline": "PROJETO DE APRENDIZAGEM INTERDISCIPLINAR",
+    "teacher_name": "LUCIANO DE OLIVEIRA CHAVES"
+  },
+  {
+    "slot_number": 3,
+    "class_group": "MOD V B",
+    "discipline": "EMPREENDEDORISMO PARA TI",
+    "teacher_name": "LUCIANO DE OLIVEIRA CHAVES"
+  },
+  {
+    "slot_number": 4,
+    "class_group": "MOD V B",
+    "discipline": "HISTÓRIA",
+    "teacher_name": "FRANCISCA DA SILVA SOUSA"
+  },
+  {
+    "slot_number": 1,
+    "class_group": "MOD V C",
+    "discipline": "EMPREENDEDORISMO PARA TI",
+    "teacher_name": "LUCIANO DE OLIVEIRA CHAVES"
+  },
+  {
+    "slot_number": 2,
+    "class_group": "MOD V C",
+    "discipline": "HISTÓRIA",
+    "teacher_name": "FRANCISCA DA SILVA SOUSA"
+  },
+  {
+    "slot_number": 3,
+    "class_group": "MOD V C",
+    "discipline": "ELETIVA",
+    "teacher_name": "GERSON DOS SANTOS"
+  },
+  {
+    "slot_number": 4,
+    "class_group": "MOD V C",
+    "discipline": "PROJETO DE APRENDIZAGEM INTERDISCIPLINAR",
+    "teacher_name": "LUCIANO DE OLIVEIRA CHAVES"
+  },
+  {
+    "slot_number": 1,
+    "class_group": "MOD V D",
+    "discipline": "PROJETO DE DESENVOLVIMENTO DE SISTEMAS",
+    "teacher_name": "SALOMÃO"
+  },
+  {
+    "slot_number": 2,
+    "class_group": "MOD V D",
+    "discipline": "LÍNGUA PORTUGUESA",
+    "teacher_name": "ALEXSANDRA MARIA LINARD PAES LANDIM"
+  },
+  {
+    "slot_number": 3,
+    "class_group": "MOD V D",
+    "discipline": "LÍNGUA PORTUGUESA",
+    "teacher_name": "ALEXSANDRA MARIA LINARD PAES LANDIM"
+  },
+  {
+    "slot_number": 4,
+    "class_group": "MOD V D",
+    "discipline": "PROJETO DE DESENVOLVIMENTO DE SISTEMAS",
+    "teacher_name": "SALOMÃO"
+  }
+]

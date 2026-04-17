@@ -1,0 +1,163 @@
+﻿
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Segunda-feira', 1, 
+'MOD V A', 'PROGRAMAÃ‡ÃƒO DE SISTEMAS', 'MARCOS AURELIO MATOS DOS SANTOS');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Segunda-feira', 2, 
+'MOD V A', 'PROJETO DE APRENDIZAGEM INTERDISCIPLINAR', 'MARCOS AURELIO MATOS DOS SANTOS');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Segunda-feira', 3, 
+'MOD V A', 'LÃNGUA PORTUGUESA', 'FRANCINEUDA DA SILVA SOUSA');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Segunda-feira', 4, 
+'MOD V A', 'EMPREENDEDORISMO PARA TI', 'MARCOS AURELIO MATOS DOS SANTOS');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Segunda-feira', 1, 
+'MOD V B', 'ELETIVA', 'GERSON DOS SANTOS');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Segunda-feira', 2, 
+'MOD V B', 'PA I', 'LUCIANO DE OLIVEIRA CHAVES');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Segunda-feira', 3, 
+'MOD V B', 'EMPREENDEDORISMO PARA TI', 'LUCIANO DE OLIVEIRA CHAVES');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Segunda-feira', 4, 
+'MOD V B', 'HISTÃ“RIA', 'FRANCISCA DA SILVA SOUSA');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Segunda-feira', 1, 
+'MOD V C', 'EMPREENDEDORISMO PARA TI', 'LUCIANO DE OLIVEIRA CHAVES');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Segunda-feira', 2, 
+'MOD V C', 'HISTÃ“RIA', 'FRANCISCA DA SILVA SOUSA');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Segunda-feira', 3, 
+'MOD V C', 'ELETIVA', 'GERSON DOS SANTOS');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Segunda-feira', 4, 
+'MOD V C', 'PA I', 'LUCIANO DE OLIVEIRA CHAVES');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Segunda-feira', 1, 
+'MOD V D', 'PROGRAMAÃ‡ÃƒO DE SISTEMAS', 'SALOMÃƒO');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Segunda-feira', 2, 
+'MOD V D', 'LÃNGUA PORTUGUESA', 'ALEXSANDRA MARIA LINARD PAES LANDIM');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Segunda-feira', 3, 
+'MOD V D', 'LÃNGUA PORTUGUESA', 'ALEXSANDRA MARIA LINARD PAES LANDIM');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Segunda-feira', 4, 
+'MOD V D', 'PROGRAMAÃ‡ÃƒO DE SISTEMAS', 'SALOMÃƒO');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('TerÃ§a-feira', 1, 
+'MOD V A', 'SOCIOLOGIA', 'DANIEL MAGALHAES CHAVES');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('TerÃ§a-feira', 2, 
+'MOD V A', 'ELETIVA', 'MARCOS AURELIO MATOS DOS SANTOS');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('TerÃ§a-feira', 3, 
+'MOD V A', 'EMPREENDEDORISMO PARA TI', 'MARCOS AURELIO MATOS DOS SANTOS');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('TerÃ§a-feira', 4, 
+'MOD V A', 'FÃSICA', 'JORGE LUÃS SÃ BEZERRA');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('TerÃ§a-feira', 1, 
+'MOD V B', 'FÃSICA', 'JORGE LUÃS SÃ BEZERRA');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('TerÃ§a-feira', 2, 
+'MOD V B', 'SOCIOLOGIA', 'DANIEL MAGALHAES CHAVES');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('TerÃ§a-feira', 3, 
+'MOD V B', 'LÃNGUA PORTUGUESA', 'FRANCINEUDA DA SILVA SOUSA');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('TerÃ§a-feira', 4, 
+'MOD V B', 'LÃNGUA PORTUGUESA', 'FRANCINEUDA DA SILVA SOUSA');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('TerÃ§a-feira', 1, 
+'MOD V C', 'PROGRAMAÃ‡ÃƒO DE SISTEMAS', 'HORÃRIO VAGO');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('TerÃ§a-feira', 2, 
+'MOD V C', 'EMPREENDEDORISMO PARA TI', 'LUCIANO DE OLIVEIRA CHAVES');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('TerÃ§a-feira', 3, 
+'MOD V C', 'BIOLOGIA', 'HELANNE BEATRIZ SILVA OLIVEIRA');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('TerÃ§a-feira', 4, 
+'MOD V C', 'LE', 'LINDELVÃ‚NIA');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('TerÃ§a-feira', 1, 
+'MOD V D', 'LE', 'LINDELVÃ‚NIA');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('TerÃ§a-feira', 2, 
+'MOD V D', 'ELETIVA', 'HORÃRIO VAGO');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('TerÃ§a-feira', 3, 
+'MOD V D', 'SOCIOLOGIA', 'DANIEL MAGALHAES CHAVES');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('TerÃ§a-feira', 4, 
+'MOD V D', 'BIOLOGIA', 'HELANNE BEATRIZ SILVA OLIVEIRA');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Quarta-feira', 1, 
+'MOD V A', 'HISTÃ“RIA', 'FRANCISCA DA SILVA SOUSA');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Quarta-feira', 2, 
+'MOD V A', 'MATEMÃTICA', 'WESLEY BEZERRA PORTELA FREITAS');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Quarta-feira', 3, 
+'MOD V A', 'LE', 'ELLYDA');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Quarta-feira', 4, 
+'MOD V A', 'BIOLOGIA', 'HELANNE BEATRIZ SILVA OLIVEIRA');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Quarta-feira', 1, 
+'MOD V B', 'EMPREENDEDORISMO PARA TI', 'LUCIANO DE OLIVEIRA CHAVES');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Quarta-feira', 2, 
+'MOD V B', 'EMPREENDEDORISMO PARA TI', 'LUCIANO DE OLIVEIRA CHAVES');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Quarta-feira', 3, 
+'MOD V B', 'MATEMÃTICA', 'WESLEY BEZERRA PORTELA FREITAS');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Quarta-feira', 4, 
+'MOD V B', 'MATEMÃTICA', 'WESLEY BEZERRA PORTELA FREITAS');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Quarta-feira', 1, 
+'MOD V C', 'PROGRAMAÃ‡ÃƒO DE SISTEMAS', 'HORÃRIO VAGO');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Quarta-feira', 2, 
+'MOD V C', 'FÃSICA', 'JORGE LUÃS SÃ BEZERRA');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Quarta-feira', 3, 
+'MOD V C', 'EMPREENDEDORISMO PARA TI', 'LUCIANO DE OLIVEIRA CHAVES');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Quarta-feira', 4, 
+'MOD V C', 'PROGRAMAÃ‡ÃƒO DE SISTEMAS', 'HORÃRIO VAGO');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Quarta-feira', 1, 
+'MOD V D', 'MATEMÃTICA', 'WESLEY BEZERRA PORTELA FREITAS');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Quarta-feira', 2, 
+'MOD V D', 'GEOGRAFIA', 'JOSE DE ASSUNCAO SOUSA BARBOSA');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Quarta-feira', 3, 
+'MOD V D', 'FÃSICA', 'JORGE LUÃS SÃ BEZERRA');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Quarta-feira', 4, 
+'MOD V D', 'PROJETO DE APRENDIZAGEM INTERDISCIPLINAR', 'JARBAS');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Quinta-feira', 1, 
+'MOD V A', 'PROGRAMAÃ‡ÃƒO DE SISTEMAS', 'MARCOS AURELIO MATOS DOS SANTOS');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Quinta-feira', 2, 
+'MOD V A', 'QUÃMICA', 'WILSILENE DOS SANTOS OLIVEIRA BRANDÃƒO');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Quinta-feira', 3, 
+'MOD V A', 'LÃNGUA PORTUGUESA', 'FRANCINEUDA DA SILVA SOUSA');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Quinta-feira', 4, 
+'MOD V A', 'PROGRAMAÃ‡ÃƒO DE SISTEMAS', 'MARCOS AURELIO MATOS DOS SANTOS');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Quinta-feira', 1, 
+'MOD V B', 'LE', 'ELLYDA');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Quinta-feira', 2, 
+'MOD V B', 'BIOLOGIA', 'HELANNE BEATRIZ SILVA OLIVEIRA');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Quinta-feira', 3, 
+'MOD V B', 'GEOGRAFIA', 'JOSE DE ASSUNCAO SOUSA BARBOSA');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Quinta-feira', 4, 
+'MOD V B', 'QUÃMICA', 'WILSILENE DOS SANTOS OLIVEIRA BRANDÃƒO');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Quinta-feira', 1, 
+'MOD V C', 'LÃNGUA PORTUGUESA', 'FRANCINEUDA DA SILVA SOUSA');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Quinta-feira', 2, 
+'MOD V C', 'LÃNGUA PORTUGUESA', 'FRANCINEUDA DA SILVA SOUSA');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Quinta-feira', 3, 
+'MOD V C', 'QUÃMICA', 'WILSILENE DOS SANTOS OLIVEIRA BRANDÃƒO');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Quinta-feira', 4, 
+'MOD V C', 'PROGRAMAÃ‡ÃƒO DE SISTEMAS', 'HORÃRIO VAGO');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Quinta-feira', 1, 
+'MOD V D', 'PROGRAMAÃ‡ÃƒO DE SISTEMAS', 'SALOMÃƒO');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Quinta-feira', 2, 
+'MOD V D', 'HISTÃ“RIA', 'FRANCISCA DA SILVA SOUSA');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Quinta-feira', 3, 
+'MOD V D', 'EMPREENDEDORISMO PARA TI', 'SALOMÃƒO');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Quinta-feira', 4, 
+'MOD V D', 'EMPREENDEDORISMO PARA TI', 'SALOMÃƒO');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Sexta-feira', 1, 
+'MOD V A', 'EMPREENDEDORISMO PARA TI', 'MARCOS AURELIO MATOS DOS SANTOS');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Sexta-feira', 2, 
+'MOD V A', 'MATEMÃTICA', 'WESLEY BEZERRA PORTELA FREITAS');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Sexta-feira', 3, 
+'MOD V A', 'GEOGRAFIA', 'JOSE DE ASSUNCAO SOUSA BARBOSA');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Sexta-feira', 4, 
+'MOD V A', 'PROGRAMAÃ‡ÃƒO DE SISTEMAS', 'MARCOS AURELIO MATOS DOS SANTOS');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Sexta-feira', 1, 
+'MOD V B', 'PROGRAMAÃ‡ÃƒO DE SISTEMAS', 'HORÃRIO VAGO');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Sexta-feira', 2, 
+'MOD V B', 'PROGRAMAÃ‡ÃƒO DE SISTEMAS', 'HORÃRIO VAGO');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Sexta-feira', 3, 
+'MOD V B', 'PROGRAMAÃ‡ÃƒO DE SISTEMAS', 'HORÃRIO VAGO');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Sexta-feira', 4, 
+'MOD V B', 'PROGRAMAÃ‡ÃƒO DE SISTEMAS', 'HORÃRIO VAGO');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Sexta-feira', 1, 
+'MOD V C', 'GEOGRAFIA', 'JOSE DE ASSUNCAO SOUSA BARBOSA');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Sexta-feira', 2, 
+'MOD V C', 'SOCIOLOGIA', 'DANIEL MAGALHAES CHAVES');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Sexta-feira', 3, 
+'MOD V C', 'MATEMÃTICA', 'WESLEY BEZERRA PORTELA FREITAS');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Sexta-feira', 4, 
+'MOD V C', 'MATEMÃTICA', 'WESLEY BEZERRA PORTELA FREITAS');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Sexta-feira', 1, 
+'MOD V D', 'MATEMÃTICA', 'WESLEY BEZERRA PORTELA FREITAS');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Sexta-feira', 2, 
+'MOD V D', 'PROGRAMAÃ‡ÃƒO DE SISTEMAS', 'SALOMÃƒO');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Sexta-feira', 3, 
+'MOD V D', 'QUÃMICA', 'WILSILENE DOS SANTOS OLIVEIRA BRANDÃƒO');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Sexta-feira', 4, 
+'MOD V D', 'EMPREENDEDORISMO PARA TI', 'SALOMÃƒO');
+
+

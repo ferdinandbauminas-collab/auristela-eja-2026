@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auristela Dashboard V4.0 | Monitoramento EJA 2026</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Scripts Externos -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lucide@0.412.0/dist/umd/lucide.min.js"></script>
+
+    <style>
+        :root {
+            --bg-deep: #0f172a;
+            --bg-card: rgba(30, 41, 59, 0.7);
+            --primary: #6366f1;
+            --secondary: #06b6d4;
+            --success: #10b981;
+            --danger: #f43f5e;
+            --warning: #f59e0b;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
+
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(6, 182, 212, 0.05) 0%, transparent 40%);
+        }
+
+        .container { max-width: 1400px; padding: 2rem; margin: 0 auto; }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .brand h1 { font-size: 2.2rem; font-weight: 700; color: #fff; }
+        .brand p { color: var(--text-dim); }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 1.5rem;
+            backdrop-filter: blur(15px);
+        }
+
+        .kpi-card .label { color: var(--text-dim); font-size: 0.8rem; text-transform: uppercase; margin-bottom: 0.5rem; }
+        .kpi-card .value { font-size: 2.2rem; font-weight: 700; }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .table-container { 
+            width: 100%; 
+            overflow: auto; 
+            margin-top: 1rem; 
+            max-height: 500px;
+            padding-right: 5px;
+        }
+
+        /* Custom Scrollbar */
+        .table-container::-webkit-scrollbar { width: 6px; height: 6px; }
+        .table-container::-webkit-scrollbar-track { background: transparent; }
+        .table-container::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+        .table-container::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+        table { width: 100%; border-collapse: separate; border-spacing: 0 0.5rem; }
+        
+        th { 
+            text-align: left; 
+            padding: 0.8rem; 
+            color: var(--text-dim); 
+            font-size: 0.75rem; 
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            background: #1e293b; /* Fundo sólido para cobrir o conteúdo ao rolar */
+            z-index: 10;
+        }
+        td { padding: 0.6rem 0.8rem; background: rgba(255, 255, 255, 0.02); border-top: 1px solid var(--border); font-size: 0.8rem; white-space: nowrap; }
+        td:first-child { border-radius: 12px 0 0 12px; }
+        td:last-child { border-radius: 0 12px 12px 0; }
+
+        .rank-number { width: 28px; height: 28px; background: var(--border); display: inline-flex; justify-content: center; align-items: center; border-radius: 50%; font-size: 0.8rem; font-weight: 700; margin-right: 0.8rem; }
+        .status-pill { padding: 0.3rem 0.6rem; border-radius: 6px; font-size: 0.7rem; font-weight: 700; transition: all 0.2s; }
+        .status-monitorar { background: rgba(244, 63, 94, 0.15); color: #fb7185; cursor: pointer; border: 1px solid rgba(244, 63, 94, 0.3); }
+        .status-monitorar:hover { background: rgba(244, 63, 94, 0.25); transform: scale(1.05); }
+        .status-monitorado { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); cursor: pointer; }
+        .status-ok { background: rgba(16, 185, 129, 0.1); color: #94a3b8; }
+
+        #loader { position: fixed; inset: 0; background: var(--bg-deep); z-index: 1000; display: flex; justify-content: center; align-items: center; flex-direction: column; gap: 1rem; }
+        .spinner { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        #update-time { font-size: 0.75rem; color: var(--text-dim); border: 1px solid var(--border); padding: 0.4rem 0.8rem; border-radius: 6px; }
+    </style>
+</head>
+<body>
+    <div id="loader"><div class="spinner"></div><p>Sincronizando Escala de Memória...</p></div>
+
+    <div class="container">
+        <header>
+            <div class="brand">
+                <h1>Auristela Dashboard V4.0</h1>
+                <p>Auditoria EJA 2026 • Auditoria por Faltas Diárias</p>
+            </div>
+            <div id="header-controls">
+                <span id="update-time">Iniciando...</span>
+            </div>
+        </header>
+
+        <div class="kpi-grid">
+            <div class="card kpi-card">
+                <div class="label">Lançamentos Totais</div>
+                <div class="value" id="kpi-total-att">--</div>
+            </div>
+            <div class="card kpi-card">
+                <div class="label">Faltas Docentes (Dias)</div>
+                <div class="value" id="kpi-doc-absences" style="color: var(--danger)">--</div>
+            </div>
+            <div class="card kpi-card">
+                <div class="label">Alunos IRREGULARES</div>
+                <div class="value" id="kpi-student-risk" style="color: var(--warning)">--</div>
+            </div>
+            <div class="card kpi-card">
+                <div class="label">Período de Análise</div>
+                <div class="value" style="font-size: 1.1rem; margin-top: 1rem;">02/03/2026 a hoje</div>
+            </div>
+        </div>
+
+        <div class="main-grid">
+            <!-- AUDITORIA PROFESSORES -->
+            <div class="card">
+                <h2 style="margin-bottom: 1.2rem; font-size: 1.4rem;">Auditoria Docente (Faltas por Dia)</h2>
+                <div class="table-container">
+                    <table id="teacher-table">
+                        <thead>
+                            <tr>
+                                <th>Professor</th>
+                                <th>Dias Previstos</th>
+                                <th>Dias com Falta</th>
+                                <th>Eficiência Diária</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- RANKING ALUNOS -->
+            <div class="card">
+                <h2 style="margin-bottom: 1.2rem; font-size: 1.4rem;">Ranking de Faltas (Alunos)</h2>
+                <p style="color: var(--text-dim); font-size: 0.8rem; margin-bottom: 1rem;">
+                    Exibe alunos que faltaram a 100% das aulas no mesmo dia.
+                </p>
+                <div class="table-container">
+                    <table id="student-table">
+                        <thead>
+                            <tr>
+                                <th>Aluno</th>
+                                <th>Turma</th>
+                                <th>Faltas Totais</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = "https://wkmjoeoankucnhhanbqj.supabase.co";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndrbWpvZW9hbmt1Y25oaGFuYnFqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwNzA2OTMsImV4cCI6MjA4NjY0NjY5M30.lCcKfDP-Zv56VtXxXtdaNjspO8FidkqIryd0ssdQYsM";
+        const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        const START_DATE = "2026-03-02";
+        
+        // CALENDÁRIO OFICIAL 2026 (GESTÃO ISEDUC)
+        const HOLIDAYS = [
+            "2026-01-01", "2026-02-16", "2026-02-17", "2026-02-18", "2026-04-02", 
+            "2026-04-03", "2026-04-21", "2026-05-01", "2026-06-04", "2026-09-07", 
+            "2026-10-12", "2026-10-15", "2026-10-19", "2026-10-30", "2026-11-02", 
+            "2026-11-15", "2026-11-20", "2026-12-08", "2026-12-25"
+        ];
+
+        const REPOSITION_SATURDAYS = {
+            "2026-03-07": "Segunda-feira",
+            "2026-03-28": "Terça-feira",
+            "2026-04-11": "Quarta-feira",
+            "2026-05-09": "Quinta-feira",
+            "2026-06-27": "Sexta-feira",
+            "2026-07-11": "Segunda-feira",
+            "2026-08-15": "Terça-feira",
+            "2026-08-29": "Quarta-feira",
+            "2026-09-26": "Quinta-feira",
+            "2026-11-07": "Sexta-feira",
+            "2026-11-28": "Segunda-feira",
+            "2026-12-05": "Terça-feira"
+        };
+
+        // ESCALA CONSOLIDADA DA MEMÓRIA (VERIFICADA)
+        const TEACHER_SCHEDULE = {
+            "GEMILSON": ["Segunda-feira", "Quarta-feira"],
+            "FRANCISCA": ["Segunda-feira", "Quarta-feira", "Quinta-feira"],
+            "ALEXSANDRA": ["Segunda-feira", "Terça-feira"],
+            "EDNARDO": ["Segunda-feira"],
+            "FRANCINEUDA": ["Segunda-feira", "Terça-feira", "Quinta-feira"],
+            "MARCOS AURELIO": ["Segunda-feira", "Terça-feira", "Quinta-feira", "Sexta-feira"],
+            "DENILSON": ["Segunda-feira", "Quinta-feira", "Sexta-feira"],
+            "LUCIANO": ["Segunda-feira", "Terça-feira", "Quarta-feira"],
+            "GERSON": ["Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira"],
+            "SALOMAO": ["Segunda-feira", "Quinta-feira", "Sexta-feira"],
+            "WILSILENE": ["Quinta-feira", "Sexta-feira"],
+            "WESLEY": ["Terça-feira", "Quarta-feira", "Sexta-feira"],
+            "EUNICE": ["Terça-feira", "Sexta-feira"],
+            "HELANNE": ["Terça-feira", "Quarta-feira", "Quinta-feira"],
+            "DANIEL": ["Terça-feira", "Quarta-feira", "Sexta-feira"],
+            "JORGE": ["Terça-feira", "Quarta-feira"],
+            "LINDELVANIA": ["Terça-feira", "Quarta-feira"],
+            "ELLYDA": ["Quarta-feira", "Quinta-feira", "Sexta-feira"],
+            "FRANCISCO JR": ["Quinta-feira"],
+            "JOANA DARC": ["Sexta-feira"],
+            "CARMEN": ["Sexta-feira"],
+            "CARLOS AUGUSTO": ["Terça-feira", "Quinta-feira"],
+            "JARBAS": ["Quarta-feira"],
+            "ASSUNCAO": ["Quarta-feira", "Quinta-feira", "Sexta-feira"]
+        };
+
+        const TEACHER_ALIAS = {
+            "ALEXSANDRA MARIA LINARD PAES LANDIM": "ALEXSANDRA",
+            "ALESSANDRA": "ALEXSANDRA",
+            "ALEXSANDRA": "ALEXSANDRA",
+            "FRANCINELDA": "FRANCINEUDA",
+            "FRANCINEUDA": "FRANCINEUDA",
+            "MARIA EUNICE": "EUNICE",
+            "MARIA EUNICE LIRA TEIXEIRA ANDRADE": "EUNICE",
+            "DANIEL MAGALHAES": "DANIEL",
+            "MARCOS AURELIO": "MARCOS AURELIO",
+            "MARCOS AURELIO MATOS DOS SANTOS": "MARCOS AURELIO",
+            "CARMEN SILVIA": "CARMEN",
+            "CARLENO": "CARMEN",
+            "JARBAS FERNANDES": "JARBAS",
+            "ELLYDA FERNANDA": "ELLYDA",
+            "ADELIA MARIA VIANA PINHEIRO": "CARLOS AUGUSTO",
+            "ADELIA MARIA": "CARLOS AUGUSTO",
+            "MARIA EUNICE LIRA TEIXEIRA ANDRADE": "EUNICE",
+            "MARIA EUNICE": "EUNICE",
+            "JOSE DE ASSUNCAO SOUSA BARBOSA": "ASSUNCAO",
+            "JOSE DE ASSUNCAO": "ASSUNCAO",
+            "JOSE DE ASSUNÇÃO": "ASSUNCAO",
+            "WILSILENE DOS SANTOS OLIVEIRA BRANDÃO": "WILSILENE",
+            "WILSILENE": "WILSILENE",
+            "GEMILSOM": "GEMILSON",
+            "GEMILSON JOSE DE SOUSA": "GEMILSON",
+            "CARLOS AUGUSTO ALVES DE OLIVEIRA": "CARLOS AUGUSTO"
+        };
+
+        const norm = {
+            teacher: (t) => {
+                if (!t) return "";
+                // Remove acentos e padroniza para maiúsculo
+                let ut = t.toUpperCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                
+                // 1. Tenta match direto no Alias
+                if (TEACHER_ALIAS[ut]) return TEACHER_ALIAS[ut];
+
+                // 2. Se o nome completo ou simplificado já existe no Cronograma, usa ele direto
+                if (TEACHER_SCHEDULE[ut]) return ut;
+                
+                // 3. Tenta encontrar se o nome do banco CONTÉM alguma chave do Cronograma (Busca Reversa)
+                // Isso resolve "MARIA EUNICE..." -> "EUNICE" ou "WILSILENE DOS SANTOS..." -> "WILSILENE"
+                for(let key in TEACHER_SCHEDULE) {
+                    if (ut.includes(key)) return key;
+                }
+                
+                // 4. Tenta match parcial nos Aliases
+                for(let key in TEACHER_ALIAS) {
+                    let normalizedKey = key.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
+                    if (ut.includes(normalizedKey)) return TEACHER_ALIAS[key];
+                }
+
+                // 5. Caso especial para nomes compostos conhecidos (Salvaguarda)
+                if (ut.includes("MARCOS AURELIO")) return "MARCOS AURELIO";
+                if (ut.includes("CARLOS AUGUSTO")) return "CARLOS AUGUSTO";
+                if (ut.includes("JOANA DARC")) return "JOANA DARC";
+                if (ut.includes("FRANCISCO JUNIOR") || ut.includes("FRANCISCO JR")) return "FRANCISCO JR";
+
+                // 6. Default: Pegar o primeiro nome
+                return ut.split(' ')[0];
+            },
+            weekday: (w) => {
+                if(!w) return "";
+                let nw = w.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/-/g, " ");
+                // Remove "feira" para garantir match seguro em qualquer navegador/locale
+                return nw.replace(/\s*feira/g, "").trim();
+            }
+        };
+
+        let state = { attendance: [], suspensions: [] };
+
+        // GESTÃO DE MONITORAMENTO (LOCAL STORAGE)
+        function getMonitoredList() {
+            return JSON.parse(localStorage.getItem('auristela_monitored_2026') || '[]');
+        }
+
+        function toggleMonitor(studentName) {
+            let list = getMonitoredList();
+            if (list.includes(studentName)) {
+                list = list.filter(n => n !== studentName);
+            } else {
+                list.push(studentName);
+            }
+            localStorage.setItem('auristela_monitored_2026', JSON.stringify(list));
+            renderAll(); // Atualiza a visão
+        }
+
+        async function init() {
+            lucide.createIcons();
+            try {
+                await fetchData();
+                renderAll();
+                document.getElementById('loader').style.opacity = '0';
+                setTimeout(() => document.getElementById('loader').style.display = 'none', 500);
+            } catch (e) { console.error(e); }
+        }
+
+        async function fetchData() {
+            let attAll = [];
+            let from = 0;
+            let size = 1000;
+            while (true) {
+                const { data, error } = await sb.from('ef_attendance').select('*').gte('date', START_DATE).range(from, from + size - 1);
+                if (error || !data || data.length === 0) break;
+                attAll = attAll.concat(data);
+                from += size;
+            }
+            console.log(`📊 Audit Engine: ${attAll.length} registros carregados para análise.`);
+            state.attendance = attAll;
+            const sus = await sb.from('ef_suspensions').select('date');
+            state.suspensions = (sus.data || []).map(x => x.date);
+            document.getElementById('update-time').innerText = `Calendário 2026 Ativo • Sincronizado: ${new Date().toLocaleTimeString('pt-BR')}`;
+            document.getElementById('kpi-total-att').innerText = state.attendance.length;
+        }
+
+        function renderAll() {
+            const workCalendar = getWorkDays();
+            
+            // 1. Auditoria Docente (Baseada na Regra de Memória + Calendário 2026)
+            const docStats = processTeacherAbsences(workCalendar);
+            renderTeacherTable(docStats);
+            
+            // 2. Ranking Alunos
+            const studentStats = processStudentAbsences();
+            renderStudentTable(studentStats);
+        }
+
+        function processTeacherAbsences(calendar) {
+            const results = {};
+            const teacherDailyPresence = {}; 
+
+            state.attendance.forEach(a => {
+                const t = norm.teacher(a.teacher_name);
+                if (!teacherDailyPresence[t]) teacherDailyPresence[t] = new Set();
+                teacherDailyPresence[t].add(a.date);
+            });
+
+            Object.keys(TEACHER_SCHEDULE).forEach(t => {
+                let scheduledDaysCount = 0;
+                let absentDates = [];
+
+                calendar.forEach(item => {
+                    const d = item.date;
+                    const matchName = norm.weekday(item.weekday);
+                    
+                    const teacherDays = (TEACHER_SCHEDULE[t] || []).map(day => norm.weekday(day));
+
+                    if (teacherDays.includes(matchName)) {
+                        scheduledDaysCount++;
+                        if (!teacherDailyPresence[t] || !teacherDailyPresence[t].has(d)) {
+                            absentDates.push(d);
+                        }
+                    }
+                });
+
+                results[t] = { 
+                    scheduled: scheduledDaysCount, 
+                    absences: absentDates.length,
+                    absentDates: absentDates,
+                    efficiency: scheduledDaysCount > 0 ? ((scheduledDaysCount - absentDates.length) / scheduledDaysCount * 100).toFixed(0) : 0
+                };
+            });
+            return results;
+        }
+
+        function processStudentAbsences() {
+            const registry = {}; 
+            state.attendance.forEach(a => {
+                const s = a.student_name.toUpperCase().trim();
+                const d = a.date;
+                const c = a.class_name || "N/A";
+                const status = (a.status || "").toLowerCase();
+                if (!registry[s]) registry[s] = { name: s, class: c, dates: {} };
+                if (!registry[s].dates[d]) registry[s].dates[d] = [];
+                registry[s].dates[d].push(status);
+            });
+
+            const ranking = [];
+            Object.keys(registry).forEach(name => {
+                let failDates = [];
+                const studentData = registry[name];
+                Object.keys(studentData.dates).forEach(date => {
+                    const dayStatuses = studentData.dates[date];
+                    if (dayStatuses.every(st => ['falta', 'ausente', 'absent', 'f', 'a'].includes(st))) {
+                        failDates.push(date);
+                    }
+                });
+                if (failDates.length > 0) ranking.push({ name, class: studentData.class, failDays: failDates.length, failDates });
+            });
+            return ranking.sort((a,b) => b.failDays - a.failDays);
+        }
+
+        function renderTeacherTable(stats) {
+            const tbody = document.querySelector('#teacher-table tbody');
+            tbody.innerHTML = '';
+            let totalAbs = 0;
+
+            Object.keys(stats).sort((a,b) => stats[b].absences - stats[a].absences).forEach(t => {
+                const s = stats[t];
+                totalAbs += s.absences;
+                const isCrit = s.absences > 3;
+                const dateTooltip = s.absentDates.length > 0 ? `Datas: ${s.absentDates.slice(0,10).map(d => d.split('-').reverse().slice(0,2).join('/')).join(', ')}${s.absentDates.length > 10 ? '...' : ''}` : 'Nenhuma falta';
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td style="font-weight: 600">${t}</td>
+                        <td>${s.scheduled} dias</td>
+                        <td style="color: ${s.absences > 0 ? 'var(--danger)' : 'inherit'}; cursor: help;" title="${dateTooltip}">
+                            ${s.absences}
+                        </td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <div style="flex:1; height:6px; background:var(--border); border-radius:10px; overflow:hidden;">
+                                    <div style="width:${s.efficiency}%; height:100%; background:var(--primary)"></div>
+                                </div>
+                                <span>${s.efficiency}%</span>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            document.getElementById('kpi-doc-absences').innerText = totalAbs;
+        }
+
+        function renderStudentTable(ranking) {
+            const tbody = document.querySelector('#student-table tbody');
+            tbody.innerHTML = '';
+            let riskCount = 0;
+            const monitoredList = getMonitoredList();
+            const TOTAL_DAYS = 200;
+
+            ranking.forEach((item, index) => {
+                const isCrit = item.failDays >= 10;
+                if (isCrit) riskCount++;
+                const dateTooltip = `Datas: ${item.failDays} faltas registradas.`;
+                const percentage = ((item.failDays / TOTAL_DAYS) * 100).toFixed(1);
+                
+                const isMonitored = monitoredList.includes(item.name);
+                const statusClass = isMonitored ? 'status-monitorado' : (isCrit ? 'status-monitorar' : 'status-ok');
+                const statusText = isMonitored ? 'MONITORADO' : (isCrit ? 'MONITORAR' : 'REGULAR');
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td style="font-size: 0.85rem;"><span class="rank-number">${index+1}</span> ${item.name}</td>
+                        <td style="font-size: 0.8rem; color: var(--text-dim)">${item.class}</td>
+                        <td style="font-weight: 700; cursor: help;" title="${dateTooltip}">
+                            ${item.failDays} <span style="font-size: 0.75rem; color: #dfff00; font-weight: 600; margin-left: 4px; text-shadow: 0 0 5px rgba(223, 255, 0, 0.5);">(${percentage}%)</span>
+                        </td>
+                        <td>
+                            <span class="status-pill ${statusClass}" onclick="toggleMonitor('${item.name}')">
+                                ${statusText}
+                            </span>
+                        </td>
+                    </tr>
+                `;
+            });
+            document.getElementById('kpi-student-risk').innerText = riskCount;
+        }
+
+        function getWorkDays() {
+            const start = new Date(START_DATE + "T12:00:00");
+            const end = new Date();
+            const list = [];
+            for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+                const iso = d.toISOString().split('T')[0];
+                const dayOfWeek = d.getDay(); // 0=Sunday, 6=Saturday
+
+                // Regra 1: Pular Domingos
+                if (dayOfWeek === 0) continue; 
+                
+                // Regra 2: Pular Feriados
+                if (HOLIDAYS.includes(iso)) continue;
+
+                // Regra 3: Suspensões Manuais
+                if (state.suspensions.includes(iso)) continue;
+
+                let weekdayName = "";
+                
+                // Regra 4: Sábados Letivos
+                if (dayOfWeek === 6) {
+                    if (REPOSITION_SATURDAYS[iso]) {
+                        weekdayName = REPOSITION_SATURDAYS[iso];
+                    } else {
+                        continue; // Sábado comum, pula
+                    }
+                } else {
+                    // Dia de semana comum
+                    const dLocal = new Date(iso + "T12:00:00").toLocaleDateString('pt-BR', { weekday: 'long' });
+                    weekdayName = dLocal.charAt(0).toUpperCase() + dLocal.slice(1);
+                }
+
+                list.push({ date: iso, weekday: weekdayName });
+            }
+            return list;
+        }
+
+        init();
+    </script>
+</body>
+</html>

@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auristela Dashboard V2.0 | Auditoria EJA 2026</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Scripts Externos -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lucide@0.412.0/dist/umd/lucide.min.js"></script>
+
+    <style>
+        :root {
+            --bg-deep: #0f172a;
+            --bg-card: rgba(30, 41, 59, 0.7);
+            --primary: #6366f1;
+            --secondary: #06b6d4;
+            --success: #10b981;
+            --danger: #f43f5e;
+            --warning: #f59e0b;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --border: rgba(255, 255, 255, 0.1);
+            --glass: rgba(255, 255, 255, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(6, 182, 212, 0.05) 0%, transparent 40%);
+        }
+
+        /* Glassmorphism Background Decoration */
+        .decor {
+            position: fixed;
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            filter: blur(120px);
+            opacity: 0.1;
+            z-index: -1;
+        }
+        .decor-1 { top: -100px; right: -100px; }
+        .decor-2 { bottom: -100px; left: -100px; }
+
+        .container {
+            max-width: 1400px;
+            padding: 2rem;
+            margin: 0 auto;
+        }
+
+        /* Header Section */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .brand h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #fff, var(--text-dim));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
+        }
+
+        .brand p {
+            color: var(--text-dim);
+            font-size: 1rem;
+            margin-top: 0.2rem;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        /* Buttons & Components */
+        .btn {
+            background: var(--glass);
+            border: 1px border var(--border);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+            border-color: var(--primary);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
+
+        /* KPI Cards */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 2rem;
+            backdrop-filter: blur(15px);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .kpi-card .label {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .kpi-card .value {
+            font-size: 2.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: baseline;
+            gap: 0.5rem;
+        }
+
+        .kpi-card .sub {
+            font-size: 1rem;
+            color: var(--text-dim);
+            font-weight: 400;
+        }
+
+        /* Dash Layouts */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+
+        /* Tables */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 1rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 0.8rem;
+        }
+
+        th {
+            text-align: left;
+            padding: 1rem;
+            color: var(--text-dim);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        td {
+            padding: 1.2rem 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        td:first-child {
+            border-left: 1px solid var(--border);
+            border-radius: 16px 0 0 16px;
+        }
+
+        td:last-child {
+            border-right: 1px solid var(--border);
+            border-radius: 0 16px 16px 0;
+        }
+
+        .badge {
+            padding: 0.4rem 0.8rem;
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge-success { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+        .badge-danger { background: rgba(244, 63, 94, 0.1); color: var(--danger); }
+        .badge-warning { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+
+        /* Chart Canvas */
+        .chart-container {
+            height: 300px;
+            width: 100%;
+        }
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-in {
+            animation: fadeInUp 0.8s ease-out backwards;
+        }
+
+        /* Loading Overlay */
+        #loader {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-deep);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 1.5rem;
+            transition: opacity 0.5s ease;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--glass);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .main-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="decor decor-1"></div>
+    <div class="decor decor-2"></div>
+
+    <div id="loader">
+        <div class="spinner"></div>
+        <p>Sincronizando com Auristela...</p>
+    </div>
+
+    <div class="container">
+        <header>
+            <div class="brand">
+                <h1>Auristela Dashboard</h1>
+                <p>Sistema de Auditoria Inteligente EJA 2026 • Módulos I, III e V</p>
+            </div>
+            <div class="controls">
+                <button class="btn" onclick="markNoClassDay()">
+                    <i data-lucide="calendar-off"></i> Suspender Aula
+                </button>
+                <button class="btn btn-primary" onclick="generateDetailedReport()">
+                    <i data-lucide="file-text"></i> Gerar Diário
+                </button>
+            </div>
+        </header>
+
+        <div class="kpi-grid">
+            <div class="card kpi-card animate-in" style="animation-delay: 0.1s">
+                <div class="label"><i data-lucide="users"></i> Alunos na Base</div>
+                <div class="value" id="kpi-students">-- <span class="sub">ativos</span></div>
+            </div>
+            <div class="card kpi-card animate-in" style="animation-delay: 0.2s">
+                <div class="label"><i data-lucide="check-circle-2"></i> Presença Média</div>
+                <div class="value" id="kpi-presence">--% <span class="sub" id="kpi-presence-sub">-- aulas</span></div>
+            </div>
+            <div class="card kpi-card animate-in" style="animation-delay: 0.3s">
+                <div class="label"><i data-lucide="alert-triangle"></i> Pendências Atuais</div>
+                <div class="value" id="kpi-pending" style="color: var(--warning)">-- <span class="sub">slots</span></div>
+            </div>
+        </div>
+
+        <div class="main-grid">
+            <!-- Coluna Principal: Tabela de Auditoria -->
+            <div class="card animate-in" style="animation-delay: 0.4s">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h2 style="font-size: 1.5rem;">Auditoria de Professores</h2>
+                    <span id="update-time" style="color: var(--text-dim); font-size: 0.8rem;"></span>
+                </div>
+                <div class="table-container">
+                    <table id="teacher-audit-table">
+                        <thead>
+                            <tr>
+                                <th>Professor</th>
+                                <th>Carga Horária</th>
+                                <th>Realizado</th>
+                                <th>Pendências</th>
+                                <th>Aproveitamento</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Preenchido via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Coluna Lateral: Gráficos e Alertas -->
+            <div class="sidebar-cols" style="display: flex; flex-direction: column; gap: 2rem;">
+                <div class="card animate-in" style="animation-delay: 0.5s">
+                    <h3 style="margin-bottom: 1.5rem; font-size: 1.2rem;">Tendência Semanal</h3>
+                    <div class="chart-container">
+                        <canvas id="mainChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="card animate-in" style="animation-delay: 0.6s; border-left: 4px solid var(--secondary);">
+                    <h3 style="margin-bottom: 1rem; font-size: 1.1rem;"><i data-lucide="info" style="vertical-align: middle; margin-right: 0.5rem; color: var(--secondary);"></i>Calendário 2026</h3>
+                    <p style="color: var(--text-dim); font-size: 0.9rem; line-height: 1.6;">
+                        Intervalo atual: <strong id="period-start">02/03/2026</strong> até <strong id="period-end">hoje</strong>.<br>
+                        Feriados e finais de semana são automaticamente excluídos dos cálculos.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // CONFIGURAÇÕES SUPABASE
+        const SUPABASE_URL = "https://wkmjoeoankucnhhanbqj.supabase.co";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndrbWpvZW9hbmt1Y25oaGFuYnFqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwNzA2OTMsImV4cCI6MjA4NjY0NjY5M30.lCcKfDP-Zv56VtXxXtdaNjspO8FidkqIryd0ssdQYsM";
+        const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // CONFIGURAÇÕES DE NEGÓCIO
+        const DATA_OFFSET = "2026-03-02"; // Início oficial
+        const HOLIDAYS = [
+            "2026-01-01", "2026-02-16", "2026-02-17", "2026-02-18", 
+            "2026-03-05", "2026-04-03", "2026-04-21", "2026-05-01", 
+            "2026-06-04", "2026-08-16", "2026-09-07", "2026-10-12", 
+            "2026-10-19", "2026-11-02", "2026-11-15", "2026-11-20", "2026-12-25"
+        ];
+
+        // MAPEAMENTO DE ALIASES (Refinado)
+        const TEACHER_ALIAS = {
+            "CARMEN SILVIA": "CARMEN",
+            "CARMEN SILVIA NUNES DE MOURA SANTOS": "CARMEN",
+            "FRANCINEUDA DA SILVA SOUSA": "FRANCINEUDA",
+            "FRANCINEUDA DA SILVA": "FRANCINEUDA",
+            "JOSE DE ASSUNCAO SOUSA BARBOSA": "ASSUNCAO",
+            "CARLOS AUGUSTO ALVES DE OLIVEIRA": "CARLOS AUGUSTO",
+            "HELANNE BEATRIZ SILVA OLIVEIRA": "HELANNE",
+            "MARCOS AURELIO MATOS DOS SANTOS": "MARCOS AURELIO",
+            "DENILSON DAVID DA SILVA SANTOS": "DENILSON",
+            "LUCIANO DE OLIVEIRA CHAVES": "LUCIANO",
+            "WESLEY BEZERRA PORTELA FREITAS": "WESLEY",
+            "WILSILENE DOS SANTOS OLIVEIRA BRANDÃO": "WILSILENE",
+            "ALEXSANDRA MARIA LINARD PAES LANDIM": "ALEXSANDRA",
+            "EDNARDO FERREIRA DE SOUSA": "EDNARDO",
+            "FRANCISCA DA SILVA SOUSA": "FRANCISCA",
+            "GERSON DOS SANTOS": "GERSON"
+        };
+
+        // MOTOR DE NORMALIZAÇÃO
+        const norm = {
+            class: (c) => {
+                if (!c) return "";
+                let n = c.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                n = n.replace(/MODULO/g, "").replace(/MOD\b/g, "").replace(/INFORMATICA/g, "INFO").replace(/\s+/g, "");
+                // BUG FIX ROMAN: Ordenar do maior para o menor
+                n = n.replace(/IIIA/g, "3A").replace(/VB/g, "5B").replace(/VA/g, "5A").replace(/IA/g, "1A");
+                n = n.replace(/[^A-Z0-9]/g, "");
+                return n;
+            },
+            teacher: (t) => {
+                if (!t) return "";
+                let n = t.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+                if (TEACHER_ALIAS[n]) return TEACHER_ALIAS[n];
+                // Fallback: se o alias estiver no objeto sem normalização, usa ele
+                for (let key in TEACHER_ALIAS) {
+                    if (n.includes(key.normalize("NFD").replace(/[\u0300-\u036f]/g, ""))) return TEACHER_ALIAS[key];
+                }
+                return n.split(' ')[0]; // Retorna primeiro nome como fallback
+            }
+        };
+
+        let state = {
+            students: [],
+            attendance: [],
+            schedule: [],
+            suspensions: []
+        };
+
+        // INICIALIZAÇÃO
+        async function init() {
+            lucide.createIcons();
+            try {
+                await fetchData();
+                renderDashboard();
+                document.getElementById('loader').style.opacity = '0';
+                setTimeout(() => document.getElementById('loader').style.display = 'none', 500);
+            } catch (err) {
+                console.error("Erro fatal na inicialização:", err);
+                alert("Erro ao conectar com Supabase. Verifique o console.");
+            }
+        }
+
+        async function fetchData() {
+            console.log("AuditEngine: Coletando dados...");
+            const [std, att, sch, sus] = await Promise.all([
+                sb.from('ef_students').select('id'),
+                sb.from('ef_attendance').select('*').gte('date', DATA_OFFSET),
+                sb.from('ef_schedule').select('*'),
+                sb.from('ef_suspensions').select('*')
+            ]);
+
+            state.students = std.data || [];
+            state.attendance = att.data || [];
+            state.schedule = sch.data || [];
+            state.suspensions = (sus.data || []).map(s => s.date);
+            
+            document.getElementById('update-time').innerText = `Atualizado em: ${new Date().toLocaleTimeString('pt-BR')}`;
+        }
+
+        function renderDashboard() {
+            // KPIs
+            document.getElementById('kpi-students').innerHTML = `${state.students.length} <span class="sub">ativos</span>`;
+            
+            const totalRecords = state.attendance.length;
+            const presenceCount = state.attendance.filter(a => ['presente', 'present', 'p'].includes(a.status?.toLowerCase())).length;
+            const presenceRate = totalRecords > 0 ? ((presenceCount / totalRecords) * 100).toFixed(1) : 0;
+            
+            document.getElementById('kpi-presence').innerHTML = `${presenceRate}% <span class="sub">${totalRecords} registros</span>`;
+
+            // Auditoria de Professores
+            processAudit();
+            renderChart();
+        }
+
+        function processAudit() {
+            const auditData = {};
+            
+            // 1. Mapear cronograma por professor
+            state.schedule.forEach(s => {
+                const tName = norm.teacher(s.teacher_name);
+                if (!auditData[tName]) auditData[tName] = { 
+                    originalName: s.teacher_name,
+                    expected: 0, 
+                    performed: 0, 
+                    pendencies: 0,
+                    slots: [] // {day, class, discipline}
+                };
+                auditData[tName].slots.push(s);
+            });
+
+            // 2. Mapear lançamentos (Cache de busca rápida)
+            const attendanceMap = new Set();
+            state.attendance.forEach(a => {
+                const key = `${a.date}|${norm.teacher(a.teacher_name)}|${norm.class(a.class_name)}`;
+                attendanceMap.add(key);
+            });
+
+            // 3. Iteração Temporal (Audit Engine V2)
+            const today = new Date();
+            const start = new Date(DATA_OFFSET + "T12:00:00"); // Meio dia para evitar erros de borda
+            const dates = [];
+            
+            for (let d = new Date(start); d <= today; d.setDate(d.getDate() + 1)) {
+                const dateISO = d.toISOString().split('T')[0];
+                const dayOfWeek = d.toLocaleDateString('pt-BR', { weekday: 'long' });
+                const dayName = dayOfWeek.charAt(0).toUpperCase() + dayOfWeek.slice(1);
+
+                // Critérios de exclusão
+                if (d.getDay() === 0) continue; // Domingo sempre off
+                if (d.getDay() === 6) continue; // Sábados (por enquanto off, conforme regra antiga)
+                if (HOLIDAYS.includes(dateISO)) continue; // Feriados off
+                if (state.suspensions.includes(dateISO)) continue; // Suspensões off
+
+                // Para cada professor e seus slots previstos para este dia
+                Object.keys(auditData).forEach(t => {
+                    const todaySlots = auditData[t].slots.filter(s => s.day_of_week === dayName);
+                    
+                    // Contagem de slots esperados vs realizados naquele dia/turma
+                    // Simplificação: se houve lançamento para a turma na data, o slot é considerado realizado
+                    const processedClassesInDate = new Set();
+                    
+                    todaySlots.forEach(slot => {
+                        const classKey = norm.class(slot.class_group);
+                        const matchKey = `${dateISO}|${t}|${classKey}`;
+                        
+                        auditData[t].expected++;
+                        
+                        if (attendanceMap.has(matchKey) && !processedClassesInDate.has(classKey)) {
+                            auditData[t].performed++;
+                            processedClassesInDate.add(classKey);
+                        } else {
+                            // Se não processamos ainda este slot, é uma pendência
+                            // Nota: Se o professor tem 2 slots na mesma turma, um lançamento cobre ambos
+                            if (!processedClassesInDate.has(classKey)) {
+                                auditData[t].pendencies++;
+                            }
+                        }
+                    });
+                });
+            }
+
+            // Renderizar Tabela
+            const tbody = document.querySelector('#teacher-audit-table tbody');
+            tbody.innerHTML = '';
+            
+            let totalPending = 0;
+
+            Object.keys(auditData).sort((a,b) => auditData[b].pendencies - auditData[a].pendencies).forEach(t => {
+                const d = auditData[t];
+                if (d.expected === 0) return;
+
+                totalPending += d.pendencies;
+                const rate = ((d.performed / d.expected) * 100).toFixed(0);
+                const statusBadge = d.pendencies === 0 ? '<span class="badge badge-success">OK</span>' : 
+                                  (rate > 70 ? '<span class="badge badge-warning">Atenção</span>' : '<span class="badge badge-danger">Crítico</span>');
+
+                const row = `
+                    <tr>
+                        <td style="font-weight: 600">${t}</td>
+                        <td>${d.expected} aulas</td>
+                        <td>${d.performed}</td>
+                        <td style="color: ${d.pendencies > 0 ? 'var(--warning)' : 'inherit'}">${d.pendencies}</td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <div style="flex: 1; height: 6px; background: var(--glass); border-radius: 10px; overflow: hidden;">
+                                    <div style="width: ${rate}%; height: 100%; background: ${rate > 80 ? 'var(--success)' : (rate > 50 ? 'var(--warning)' : 'var(--danger)')};"></div>
+                                </div>
+                                <span>${rate}%</span>
+                            </div>
+                        </td>
+                        <td>${statusBadge}</td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+
+            document.getElementById('kpi-pending').innerText = totalPending;
+        }
+
+        function renderChart() {
+            const ctx = document.getElementById('mainChart').getContext('2d');
+            
+            // Agrupar presença por data (últimos 7 dias letivos)
+            const last7 = {};
+            state.attendance.slice(-500).forEach(a => {
+                if (!last7[a.date]) last7[a.date] = 0;
+                last7[a.date]++;
+            });
+
+            const labels = Object.keys(last7).sort().slice(-7);
+            const data = labels.map(l => last7[l]);
+
+            if (window.myChart) window.myChart.destroy();
+            
+            window.myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels.map(l => l.split('-').slice(1).reverse().join('/')),
+                    datasets: [{
+                        label: 'Lançamentos',
+                        data: data,
+                        borderColor: '#6366f1',
+                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 3,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#6366f1'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { 
+                            beginAtZero: true, 
+                            grid: { color: 'rgba(255,255,255,0.05)' },
+                            ticks: { color: '#94a3b8' }
+                        },
+                        x: { 
+                            grid: { display: false },
+                            ticks: { color: '#94a3b8' }
+                        }
+                    }
+                }
+            });
+        }
+
+        async function markNoClassDay() {
+            const date = prompt("Informa a data (AAAA-MM-DD):", new Date().toISOString().split('T')[0]);
+            if (!date) return;
+            
+            const { error } = await sb.from('ef_suspensions').insert([{ date, reason: 'Suspensão Administrativa' }]);
+            if (error) alert("Erro ao salvar: " + error.message);
+            else {
+                alert("Dia marcado como não letivo!");
+                init();
+            }
+        }
+
+        function generateDetailedReport() {
+            const element = document.querySelector('.container');
+            const opt = {
+                margin: 0.5,
+                filename: `Relatorio_Auristela_${new Date().toISOString().split('T')[0]}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, backgroundColor: '#0f172a' },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'landscape' }
+            };
+            html2pdf().set(opt).from(element).save();
+        }
+
+        init();
+    </script>
+</body>
+</html>

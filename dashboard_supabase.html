@@ -6,11 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Gestão Real-time Supabase</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <!-- Supabase Client CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- PDF Generation Library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="../HorarioSemanal/lib/supabase.js"></script>
+    <script src="../HorarioSemanal/lib/chart.js"></script>
+    <script src="../HorarioSemanal/lib/html2pdf.js"></script>
     <style>
         body {
             font-family: 'Roboto', sans-serif;
@@ -32,11 +30,14 @@
             margin-bottom: 30px;
             flex-wrap: wrap;
             gap: 20px;
+            text-align: center;
+            flex-direction: column;
         }
 
         .header h1 {
             color: #1a237e;
             margin: 0;
+            text-transform: uppercase;
         }
 
         .badge {
@@ -48,7 +49,6 @@
             font-weight: 700;
         }
 
-        .filters,
         .kpis {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -86,23 +86,6 @@
             margin-top: 5px;
         }
 
-        label {
-            margin-bottom: 8px;
-            font-weight: 700;
-            color: #3f51b5;
-            font-size: 0.9rem;
-        }
-
-        select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            background: #fff;
-            font-size: 1rem;
-            color: #1e293b;
-        }
-
         .card {
             background: #fff;
             padding: 25px;
@@ -123,7 +106,7 @@
 
         .content-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
             gap: 20px;
         }
 
@@ -140,39 +123,12 @@
             border-bottom: 1px solid #f1f5f9;
         }
 
-        .card table td {
-            font-size: 0.7rem;
-            white-space: nowrap;
-        }
-
         th {
             background-color: #f8fafc;
             color: #64748b;
             font-weight: 700;
             text-transform: uppercase;
             font-size: 0.75rem;
-            letter-spacing: 1px;
-        }
-
-        tbody tr:hover {
-            background-color: #f8fafc;
-        }
-
-        .trigger-item {
-            padding: 15px;
-            margin-bottom: 12px;
-            border-radius: 10px;
-            border-left: 5px solid #ef4444;
-        }
-
-        .trigger-danger {
-            background: #fef2f2;
-            border-color: #ef4444;
-        }
-
-        .trigger-warning {
-            background: #fffbeb;
-            border-color: #f59e0b;
         }
 
         .risk-badge {
@@ -183,54 +139,18 @@
             text-transform: uppercase;
         }
 
-        .status-danger {
-            background: #fee2e2;
-            color: #ef4444;
-        }
-
-        .status-warning {
-            background: #fef3c7;
-            color: #d97706;
-        }
-
-        /* Estilos do Botão Monitorar */
-        .btn-monitor {
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            cursor: pointer;
-            border: 1px solid #e2e8f0;
-            background: #fff;
-            color: #64748b;
-            transition: all 0.2s;
-            text-transform: uppercase;
-        }
-
-        .btn-monitor.active {
-            background: #dcfce7;
-            color: #15803d;
-            border-color: #bbf7d0;
-        }
-
-        .btn-monitor:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-        }
-
         .loading-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(255, 255, 255, 0.9);
+            background: white;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            z-index: 1000;
-            transition: opacity 0.3s;
+            z-index: 10000;
         }
 
         .spinner {
@@ -252,37 +172,124 @@
             }
         }
 
-        @media (max-width: 1000px) {
-            .content-grid {
-                grid-template-columns: 1fr;
+        .trigger-item {
+            padding: 15px;
+            margin-bottom: 12px;
+            border-radius: 10px;
+            border-left: 5px solid #ef4444;
+            background: #fef2f2;
+        }
+
+        .btn-report {
+            background: #1a237e;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 15px;
+            transition: background 0.2s;
+        }
+
+        .report-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        .date-picker,
+        .btn-report {
+            box-sizing: border-box;
+            height: 44px;
+            /* Altura exata para alinhar ambos */
+            margin: 0;
+            border-radius: 8px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .date-picker {
+            padding: 0 12px;
+            border: 2px solid #1a237e;
+            color: #1a237e;
+            background: white;
+            cursor: pointer;
+            outline: none;
+            box-shadow: 0 2px 4px rgba(26, 35, 126, 0.1);
+        }
+
+        .btn-report {
+            background: #1a237e;
+            color: white;
+            border: none;
+            padding: 0 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            line-height: normal;
+            box-shadow: 0 2px 4px rgba(26, 35, 126, 0.2);
+        }
+
+        .btn-report:hover {
+            background: #283593;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(26, 35, 126, 0.3);
+        }
+
+        @media print {
+
+            .btn-report,
+            .btn-action,
+            .loading-overlay {
+                display: none !important;
             }
         }
 
-        /* --- ESTILOS DO MODAL DE RELATÓRIO --- */
+        /* Estilos dos Modais */
         .modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 10000;
             display: none;
             align-items: center;
             justify-content: center;
-            z-index: 2000;
             padding: 20px;
         }
 
-        .modal-content {
-            background: #fff;
+        .modal-card {
+            background: white;
             width: 100%;
-            max-width: 900px;
-            max-height: 90vh;
-            border-radius: 12px;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            max-width: 450px;
+            border-radius: 16px;
             overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            animation: modalIn 0.3s ease-out;
+        }
+
+        @keyframes modalIn {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
 
         .modal-header {
@@ -294,124 +301,95 @@
             align-items: center;
         }
 
+        .modal-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        .modal-close {
+            cursor: pointer;
+            font-size: 1.5rem;
+            line-height: 1;
+            opacity: 0.8;
+            transition: 0.2s;
+        }
+
+        .modal-close:hover {
+            opacity: 1;
+        }
+
         .modal-body {
             padding: 25px;
-            overflow-y: auto;
-            flex: 1;
         }
 
         .modal-footer {
-            padding: 15px 20px;
-            border-top: 1px solid #e2e8f0;
+            padding: 15px 25px;
+            background: #f8fafc;
             display: flex;
             justify-content: flex-end;
             gap: 10px;
         }
 
-        .btn {
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: #475569;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-family: inherit;
+            box-sizing: border-box;
+        }
+
+        .btn-action {
+            background: #1a237e;
+            color: white;
+            border: none;
             padding: 10px 20px;
             border-radius: 8px;
             font-weight: 700;
             cursor: pointer;
-            border: none;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            transition: 0.2s;
         }
 
-        .btn-primary {
-            background: #3f51b5;
-            color: white;
-        }
-
-        .btn-secondary {
+        .btn-action.secondary {
             background: #e2e8f0;
             color: #475569;
         }
 
-        .btn-report {
-            background: #10b981;
-            color: white;
-            margin-bottom: 20px;
+        .btn-action:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
         }
 
-        .report-section {
-            margin-bottom: 30px;
-            border-left: 4px solid #3f51b5;
-            padding-left: 15px;
+        .suspensions-list {
+            margin-top: 20px;
+            max-height: 150px;
+            overflow-y: auto;
+            font-size: 0.8rem;
         }
 
-        .report-section h3 {
-            margin: 0 0 10px 0;
-            color: #1a237e;
-            font-size: 1.1rem;
-        }
-
-        .report-class-group {
-            margin-bottom: 15px;
-        }
-
-        .report-class-header {
-            font-weight: 700;
-            color: #64748b;
-            font-size: 0.9rem;
+        .suspension-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px;
             border-bottom: 1px solid #f1f5f9;
-            padding-bottom: 5px;
-            margin-bottom: 5px;
         }
 
-        .report-student-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 5px;
-        }
-
-        .report-student-item {
-            font-size: 0.85rem;
-            padding: 4px 8px;
-            background: #f8fafc;
-            border-radius: 4px;
-        }
-
-        @media print {
-            body * {
-                visibility: hidden;
-            }
-
-            #report-modal-content,
-            #report-modal-content * {
-                visibility: visible;
-            }
-
-            #report-modal-content {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-                box-shadow: none;
-                max-height: none;
-            }
-
-            .modal-footer,
-            .modal-header .close-btn,
-            .modal-date-picker {
-                display: none !important;
-            }
-
-            .modal-header {
-                background: white !important;
-                color: black !important;
-                padding: 0;
-                border-bottom: 2px solid #333;
-            }
-
-            .modal-body {
-                padding: 0;
-            }
+        .suspension-del {
+            color: #ef4444;
+            cursor: pointer;
+            font-weight: 700;
         }
     </style>
 </head>
@@ -423,83 +401,62 @@
     </div>
 
     <div class="container">
-        <header class="header" style="justify-content: center; text-align: center; flex-direction: column;">
-            <div>
-                <h1 style="text-transform: uppercase;">GESTÃO PEDAGÓGICA DE FREQUÊNCIA</h1>
-                <p style="color: #64748b; margin: 10px 0 0 0; letter-spacing: 1px; font-weight: 500;">Monitoramento
-                    Estratégico em Tempo Real</p>
-                <div id="data-corte-info"
-                    style="font-size: 0.75rem; color: #3f51b5; margin-top: 10px; font-weight: 800; background: #ebf0ff; padding: 5px 15px; border-radius: 20px; display: inline-block;">
-                    📅 ANALISANDO DESDE: <span id="display-data-corte">...</span>
-                </div>
-            </div>
-
-            <div style="margin-top: 20px;">
-                <button class="btn btn-report" onclick="openReportModal()">
-                    📅 GERAR RELATÓRIOS DE FALTAS
+        <header class="header">
+            <h1>GESTÃO PEDAGÓGICA DE FREQUÊNCIA</h1>
+            <p style="color: #64748b;">Monitoramento Estratégico em Tempo Real</p>
+            <div id="data-corte-info" class="badge">📅 ANALISANDO DESDE: <span id="display-data-corte">...</span></div>
+            <div id="last-update" class="badge" style="margin-top:10px;">Sincronizando...</div>
+            <div class="report-controls">
+                <input type="date" id="report-date-picker" class="date-picker">
+                <button class="btn-report" onclick="generateDailyReport()">
+                    <span>📄 GERAR RELATÓRIO</span>
+                </button>
+                <button class="btn-report" style="background: #ef4444;" onclick="openSuspensionModal()">
+                    <span>🚫 MARCAR DIA SEM AULA</span>
                 </button>
             </div>
-
-            <div id="last-update" class="badge">Sincronizando...</div>
         </header>
-
-        <!-- Filtros removidos conforme solicitado -->
 
         <section class="kpis">
             <div class="kpi-card">
                 <div id="kpi-total-aulas" class="value">0</div>
-                <div class="label">Total de Aulas</div>
+                <div class="label">Total de Aulas (Válidas)</div>
             </div>
             <div class="kpi-card">
                 <div id="kpi-frequencia" class="value">0%</div>
-                <div class="label">Freq. Média</div>
-            </div>
-            <div class="kpi-card">
-                <div id="kpi-alertas" class="value" style="color: #ef4444;">0</div>
-                <div class="label">Alertas Ativos</div>
+                <div class="label">Freq. Média Alunos</div>
             </div>
         </section>
 
         <div class="content-grid">
             <div class="card">
-                <h2>🏆 Top 10 Alunos com Mais Faltas</h2>
-                <div id="top-faltosos-container">
-                    <!-- Top 10 Faltosos -->
-                </div>
+                <h2 style="color: #ef4444;">🚨 FALTAS DE PROFESSORES</h2>
+                <div id="teacher-faltas-container"></div>
             </div>
-
             <div class="card">
-                <h2>🏃 Top 10 - Alunos fora de sala</h2>
-                <div id="top-gazeteiros-container">
-                    <!-- Top 10 Gazeteiros -->
-                </div>
+                <h2>📝 PENDÊNCIAS DE LANÇAMENTO</h2>
+                <div id="teacher-summary-container"></div>
             </div>
-
-            <div class="card">
-                <h2>🚨 Gatilhos para Intervenção</h2>
-                <div id="triggers-container">
-                    <p style="color: #94a3b8; font-style: italic;">Nenhum alerta detectado.</p>
-                </div>
-            </div>
-
             <div class="card">
                 <h2>📊 Frequência por Turma</h2>
-                <div id="class-ranking-container">
-                    <!-- Tabela de Ranking -->
-                </div>
+                <div id="class-ranking-container"></div>
             </div>
-
-
             <div class="card">
-                <h2>👨‍🏫 AULAS PERDIDAS POR PROFESSOR</h2>
-                <div id="professor-ranking-container">
-                    <!-- Tabela de Gazetas por Professor -->
-                </div>
+                <h2>🏆 Top 10 Alunos Faltosos</h2>
+                <div id="top-faltosos-container"></div>
+            </div>
+            <div class="card">
+                <h2>🏃 Top 10 - Alunos Fora de Sala</h2>
+                <div id="top-gazeteiros-container"></div>
+            </div>
+            <div class="card">
+                <h2>🚨 Gatilhos de Intervenção</h2>
+                <div id="triggers-container"></div>
             </div>
         </div>
 
         <div class="card" style="margin-top: 20px;">
-            <h2>📅 Últimos Registros (Novos Primeiro)</h2>
+            <h2>📅 Últimos Registros Válidos (Sincronizados com Horário)</h2>
             <div style="overflow-x: auto;">
                 <table id="recent-records-table">
                     <thead>
@@ -512,482 +469,607 @@
                             <th>Status</th>
                         </tr>
                     </thead>
-                    <tbody id="recent-records-body">
-                        <!-- Linhas dinâmicas -->
-                    </tbody>
+                    <tbody id="recent-records-body"></tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <!-- MODAL DE RELATÓRIO -->
-    <div id="report-modal" class="modal-overlay">
-        <div class="modal-content" id="report-modal-content">
-            <div class="modal-header">
-                <h2 style="margin:0; color:white;">Relatório Diário de Faltas</h2>
-                <span class="close-btn" onclick="closeReportModal()"
-                    style="cursor:pointer; font-size:2rem;">&times;</span>
-            </div>
-            <div class="modal-body">
-                <div class="modal-date-picker"
-                    style="margin-bottom: 25px; background: #f1f5f9; padding: 15px; border-radius: 8px; display: flex; align-items: center; gap: 15px;">
-                    <label style="margin:0;">Selecionar Data:</label>
-                    <input type="date" id="report-date" onchange="generateReport()"
-                        style="padding: 10px; border-radius: 6px; border: 1px solid #cbd5e1; font-family: inherit;">
-                    <span style="font-size: 0.8rem; color: #64748b;">* Escolha um dia para listar alunos
-                        faltosos.</span>
-                </div>
-
-                <div id="report-results">
-                    <p style="text-align:center; color:#94a3b8; padding: 40px;">Selecione uma data para gerar o
-                        relatório.</p>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeReportModal()">Fechar</button>
-                <button class="btn btn-primary" onclick="previewPDF()" id="print-btn" style="display:none;">
-                    📄 SALVAR
-                </button>
-            </div>
-        </div>
-    </div>
-
     <script>
-        // Configurações do Supabase
         const SUPABASE_URL = 'https://wkmjoeoankucnhhanbqj.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndrbWpvZW9hbmt1Y25oaGFuYnFqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwNzA2OTMsImV4cCI6MjA4NjY0NjY5M30.lCcKfDP-Zv56VtXxXtdaNjspO8FidkqIryd0ssdQYsM';
-
         const { createClient } = supabase;
         const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // --- CONFIGURAÇÃO DE CORTE DE DADOS ---
-        // Mude esta data para ignorar registros antigos ou de teste.
-        // Formato: 'AAAA-MM-DD'
-        const DATA_CORTE = '2026-02-14';
-        // --------------------------------------
-
+        const DATA_CORTE = '2026-03-02';
         let allData = [];
+        let globalSchedule = [];
+        let suspendedDates = [];
+        let nationalHolidays = [];
+
+        // Funções de Normalização Globais
+        const normC = (name) => {
+            if (!name) return "";
+            let n = name.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            n = n.replace(/MODULO/g, "").replace(/MOD/g, "").replace(/TURMA/g, "").replace(/INFO/g, "").replace(/TECNICO/g, "");
+            // Padroniza numerais romanos e abreviações
+            n = n.replace(/VII/g, "7").replace(/VI/g, "6").replace(/IV/g, "4").replace(/V/g, "5").replace(/III/g, "3").replace(/II/g, "2").replace(/I/g, "1");
+            n = n.replace(/ALTE/g, "ALT").replace(/MARK/g, "MRK");
+            // Quebra em tokens, remove vazios, ordena e junta para ser imune à ordem
+            let tokens = n.split(/[^A-Z0-9]+/).filter(t => t.length > 0);
+            return tokens.sort().join("");
+        };
+        const normD = (name) => {
+            if (!name) return "";
+            let d = name.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\./g, " ");
+            d = d.replace(/ORIENTADA/g, "").replace(/ELETIVAS/g, "ELETIVA").replace(/\s+/g, "");
+            // Normalização específica para Educação Física
+            if (d.includes("EDUCACAOFISICA") || d.includes("EDFISICA") || d.includes("EFISICA")) return "EDFISICA";
+            return d.trim();
+        };
+        // Mapeamento de Nomes (Curto/Alias -> Oficial do Cronograma)
+        const TEACHER_ALIAS = {
+            "ASSUNCAO": "JOSE DE ASSUNCAO SOUSA BARBOSA",
+            "ASSUNÇÃO": "JOSE DE ASSUNCAO SOUSA BARBOSA",
+            "CARMEM": "CARMEN SILVIA NUNES DE MOURA SANTOS",
+            "CARMEN SILVIA": "CARMEN SILVIA NUNES DE MOURA SANTOS",
+            "DANIEL": "DANIEL MAGALHAES CHAVES",
+            "DANIEL MAGALHAES": "DANIEL MAGALHAES CHAVES",
+            "DANIEL MAGALHÃES": "DANIEL MAGALHAES CHAVES",
+            "DENILSON": "DENILSON DAVID DA SILVA SANTOS",
+            "EUNICE": "MARIA EUNICE LIRA TEIXEIRA ANDRADE",
+            "MARIA EUNICE": "MARIA EUNICE LIRA TEIXEIRA ANDRADE",
+            "FRANCINEUDA": "FRANCINEUDA DA SILVA SOUSA",
+            "FRANCINELDA": "FRANCINEUDA DA SILVA SOUSA", // Provável correção de digitação
+            "FRANCISCA": "FRANCISCA DA SILVA SOUSA",
+            "FRANCISCA DA SILVA": "FRANCISCA DA SILVA SOUSA",
+            "HELANE": "HELANNE BEATRIZ SILVA OLIVEIRA",
+            "HELANNE": "HELANNE BEATRIZ SILVA OLIVEIRA",
+            "JANDIRA": "CARMEM JANDIRA SILVA DE OLIVEIRA",
+            "JOANILSON": "JOANILSON OLIVEIRA DE QUEIROZ",
+            "JORGE": "JORGE LUÍS SÁ BEZERRA",
+            "LENINHA": "WILSILENE DOS SANTOS OLIVEIRA BRANDÃO",
+            "WILSILENE": "WILSILENE DOS SANTOS OLIVEIRA BRANDÃO",
+            "LINDELVANIA": "LINDELVÂNIA DE SOUSA ALMEIDA",
+            "LINDELVÂNIA": "LINDELVÂNIA DE SOUSA ALMEIDA",
+            "LUCIANO": "LUCIANO DE OLIVEIRA CHAVES",
+            "MARCOS": "MARCOS AURELIO MATOS DOS SANTOS",
+            "MIZAEL": "MIZAEL CARLOS GONCALVES DE SOUSA",
+            "PAULO": "PAULO PEREIRA GOUDINHO",
+            "WESLEY": "WESLEY BEZERRA PORTELA FREITAS",
+            "WILSON": "WILSON BENTO GUILHERME MAGALHAES",
+            "EDNARDO": "EDNARDO FERREIRA DE SOUSA",
+            "FRANCISCO JUNIOR": "FRANCISCO JR",
+            "CARLOS AUGUSTO": "CARLOS AUGUSTO ALVES DE OLIVEIRA",
+            "ADELIA MARIA VIANA PINHEIRO": "CARLOS AUGUSTO ALVES DE OLIVEIRA",
+            "ADELIA MARIA": "CARLOS AUGUSTO ALVES DE OLIVEIRA",
+            "MARIA EUNICE LIRA TEIXEIRA ANDRADE": "MARIA EUNICE LIRA TEIXEIRA ANDRADE",
+            "MARIA EUNICE": "MARIA EUNICE LIRA TEIXEIRA ANDRADE",
+            "JOSE DE ASSUNCAO SOUSA BARBOSA": "JOSE DE ASSUNCAO SOUSA BARBOSA",
+            "JOSE DE ASSUNCAO": "JOSE DE ASSUNCAO SOUSA BARBOSA",
+            "GEMILSOM": "GEMILSON",
+            "GEMILSON": "GEMILSON",
+            "GEMILSON JOSE DE SOUSA": "GEMILSON",
+            "CARLOS AUGUSTO ALVES DE OLIVEIRA": "CARLOS AUGUSTO",
+            "WILSILENE DOS SANTOS OLIVEIRA BRANDÃO": "WILSILENE DOS SANTOS OLIVEIRA BRANDÃO",
+            "WILSILENE": "WILSILENE DOS SANTOS OLIVEIRA BRANDÃO"
+        };
+
+        const normalize = (name) => !name ? "" : name.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+
+        const normT = (name) => {
+            if (!name) return "";
+            const n = name.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+            if (TEACHER_ALIAS[n]) return normalize(TEACHER_ALIAS[n]);
+            // Tenta match reverso (se a chave do cronograma está contida no nome longo)
+            for (let alias in TEACHER_ALIAS) {
+                const target = normalize(TEACHER_ALIAS[alias]);
+                if (n.includes(target)) return target;
+            }
+            return n;
+        };
+
+        const isSameT = (tSchedule, tAttendance) => {
+            return normT(tSchedule) === normT(tAttendance);
+        };
 
         async function init() {
             document.getElementById('display-data-corte').textContent = DATA_CORTE.split('-').reverse().join('/');
-            await fetchData();
 
-            // Auto-refresh a cada 60 segundos
+            // Inicializar seletor de data com 'Hoje' (Brasília)
+            const brToday = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo' }).format(new Date());
+            document.getElementById('report-date-picker').value = brToday;
+
+            await fetchData();
             setInterval(fetchData, 60000);
         }
 
         async function fetchData() {
             try {
-                const { data, error } = await supabaseClient
-                    .from('ef_attendance')
-                    .select('*')
-                    .gte('date', DATA_CORTE)
-                    .order('date', { ascending: false }); // MAIS NOVOS PRIMEIRO POR PADRÃO
+                // Paginação para ef_attendance (Pode ter 10k+ registros)
+                let attAll = [];
+                let fromAtt = 0;
+                let sizeAtt = 1000;
+                while (true) {
+                    const { data, error } = await supabaseClient.from('ef_attendance').select('*').gte('date', DATA_CORTE).range(fromAtt, fromAtt + sizeAtt - 1);
+                    if (error || !data || data.length === 0) break;
+                    attAll = attAll.concat(data);
+                    fromAtt += sizeAtt;
+                }
+                console.log(`📡 Dashboard: ${attAll.length} lançamentos brutos carregados.`);
 
-                if (error) throw error;
+                // Paginação para ef_daily_consolidated (KPIs e Ranking)
+                let consAll = [];
+                let fromCons = 0;
+                let sizeCons = 1000;
+                while (true) {
+                    const { data, error } = await supabaseClient.from('ef_daily_consolidated').select('*').gte('date', DATA_CORTE).range(fromCons, fromCons + sizeCons - 1);
+                    if (error || !data || data.length === 0) break;
+                    consAll = consAll.concat(data);
+                    fromCons += sizeCons;
+                }
+                console.log(`📊 Dashboard: ${consAll.length} registros consolidados carregados.`);
 
-                allData = data;
-                updateDashboard();
-                document.getElementById('loading').style.opacity = '0';
-                setTimeout(() => document.getElementById('loading').style.display = 'none', 300);
+                const { data: sch, error: err2 } = await supabaseClient.from('ef_schedule').select('*');
+                const { data: sus, error: err3 } = await supabaseClient.from('ef_suspensions').select('*');
 
-                const now = new Date();
-                document.getElementById('last-update').textContent = `Atualizado: ${now.toLocaleTimeString()}`;
-            } catch (err) {
-                console.error("Erro Supabase:", err);
-                alert("Erro ao conectar com Supabase. Verifique sua conexão.");
-            }
+                if (err2 || err3) throw (err2 || err3);
+
+                globalSchedule = sch;
+                suspendedDates = sus || [];
+                
+                // allData para tabelas e professores (bruto) - CORREÇÃO DA VARIÁVEL
+                allData = attAll; 
+                
+                // consolidatedData para KPIs e Rankings (resumo)
+                const consolidatedData = consAll;
+
+                updateDashboard(consolidatedData);
+                updateSuspensionsUI();
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('last-update').textContent = `Atualizado: ${new Date().toLocaleTimeString()}`;
+            } catch (err) { console.error("Erro Supabase:", err); }
         }
 
-        function updateDashboard() {
-            renderKPIs(allData);
-            renderAnalysis(allData);
+        function updateDashboard(cons) {
+            renderKPIs(cons);
+            renderAnalysis(cons);
             renderRecentTable(allData.slice(0, 50));
+            renderTeacherSummary();
         }
 
         function renderKPIs(data) {
-            const total = data.length;
-            const present = data.filter(d => d.status.toLowerCase() === 'present' || d.status.toLowerCase() === 'presente').length;
-            const freq = total > 0 ? ((present / total) * 100).toFixed(1) : 0;
-
-            document.getElementById('kpi-total-aulas').textContent = total;
-            document.getElementById('kpi-frequencia').textContent = `${freq}%`;
+            let totalClasses = 0;
+            let totalPresence = 0;
+            data.forEach(d => {
+                totalClasses += (d.presence_count + d.absence_count);
+                totalPresence += d.presence_count;
+            });
+            document.getElementById('kpi-total-aulas').textContent = totalClasses;
+            document.getElementById('kpi-frequencia').textContent = totalClasses > 0 ? `${((totalPresence / totalClasses) * 100).toFixed(1)}%` : '0%';
         }
 
         function renderAnalysis(data) {
-            const students = {};
-            const classes = {};
-            const subjects = {}; // Agrupamento por disciplina
-            const professors = {}; // Agrupamento por professor
-            const dailyCompliance = {}; // Para detectar gazeta
-
+            const students = {}; const classes = {};
             data.forEach(d => {
                 const sKey = `${d.student_name}_${d.class_name}`;
-                if (!students[sKey]) {
-                    students[sKey] = { name: d.student_name, class: d.class_name, absences: 0, total: 0, history: [], selectiveEvasionAulas: 0 };
-                }
-                students[sKey].total++;
-                students[sKey].history.push({ date: d.date, status: d.status.toLowerCase() });
-
-                // Agrupar por dia para detectar faltas integrais e gazeta
-                const dayKey = `${d.date.split('T')[0]}_${sKey}`;
-                if (!dailyCompliance[dayKey]) dailyCompliance[dayKey] = { statuses: new Set(), absenceCount: 0 };
-
-                const status = d.status.toLowerCase();
-                const isAbsent = status === 'absent' || status === 'faltou';
-
-                dailyCompliance[dayKey].statuses.add(status);
-                if (isAbsent) dailyCompliance[dayKey].absenceCount++;
+                if (!students[sKey]) students[sKey] = { name: d.student_name, class: d.class_name, absences: 0, gazetas: 0 };
+                
+                students[sKey].absences += (d.is_absent_integral ? 1 : 0);
+                students[sKey].gazetas += d.gazeta_count;
 
                 if (!classes[d.class_name]) classes[d.class_name] = { present: 0, total: 0 };
-                classes[d.class_name].total++;
-
-                if (!subjects[d.subject_name]) subjects[d.subject_name] = { present: 0, total: 0 };
-                subjects[d.subject_name].total++;
-
-                const isPresent = status === 'present' || status === 'presente';
-                if (isPresent) {
-                    classes[d.class_name].present++;
-                    subjects[d.subject_name].present++;
-                }
+                classes[d.class_name].total += (d.presence_count + d.absence_count);
+                classes[d.class_name].present += d.presence_count;
             });
 
-            // Processar Faltas Integrais e Gazeta
-            Object.entries(dailyCompliance).forEach(([key, info]) => {
-                const parts = key.split('_');
-                const date = parts[0];
-                const sKey = parts.slice(1).join('_');
-
-                if (!students[sKey].dayHistory) students[sKey].dayHistory = [];
-
-                const hasP = info.statuses.has('present') || info.statuses.has('presente');
-                const hasA = info.statuses.has('absent') || info.statuses.has('faltou');
-
-                let dayStatus = 'present';
-                // Regra de Dias de Falta Integral: Se TODOS os lançamentos do dia forem FALTA, conta 1 dia de falta
-                if (hasA && !hasP) {
-                    dayStatus = 'absent';
-                    if (students[sKey]) students[sKey].absences++;
-                } else if (hasP && hasA) {
-                    dayStatus = 'gazeta';
-                    if (students[sKey]) students[sKey].selectiveEvasionAulas += info.absenceCount;
-                }
-
-                students[sKey].dayHistory.push({ date, status: dayStatus });
-            });
-
-            // Segunda passada nos dados para identificar Gazetas por Disciplina e Professor
-            data.forEach(d => {
-                const status = d.status.toLowerCase();
-                const isAbsent = status === 'absent' || status === 'faltou';
-                if (isAbsent) {
-                    const sKey = `${d.student_name}_${d.class_name}`;
-                    const dayKey = `${d.date.split('T')[0]}_${sKey}`;
-                    const info = dailyCompliance[dayKey];
-                    const hasP = info.statuses.has('present') || info.statuses.has('presente');
-
-                    if (hasP) {
-                        // Por Disciplina
-                        if (!subjects[d.subject_name].gazetaAulas) subjects[d.subject_name].gazetaAulas = 0;
-                        subjects[d.subject_name].gazetaAulas++;
-
-                        // Por Professor
-                        if (!professors[d.teacher_name]) professors[d.teacher_name] = { gazetaAulas: 0 };
-                        professors[d.teacher_name].gazetaAulas++;
-                    }
-                }
-            });
-
-            // Gatilhos
-            const triggers = [];
-            Object.values(students).forEach(s => {
-                // Faltas consecutivas por DIA (considerando histórico diário ordenado decrescente)
-                const sortedDays = (s.dayHistory || []).sort((a, b) => b.date.localeCompare(a.date));
-                let consecutive = 0;
-                for (let d of sortedDays) {
-                    if (d.status === 'absent') {
-                        consecutive++;
-                    } else break;
-                }
-
-                if (consecutive >= 3) {
-                    // Verificar se houve risco de abandono no passado (reincidência)
-                    const pastDays = sortedDays.slice(consecutive);
-                    let hadPastAbandono = false;
-                    let pCount = 0;
-                    for (let d of pastDays) {
-                        if (d.status === 'absent') {
-                            pCount++;
-                            if (pCount >= 3) { hadPastAbandono = true; break; }
-                        } else pCount = 0;
-                    }
-
-                    triggers.push({
-                        type: 'danger',
-                        title: hadPastAbandono ? 'REINCIDÊNCIA - ABANDONO' : 'Risco de Abandono',
-                        student: s.name,
-                        class: s.class,
-                        reason: `${consecutive} faltas consecutivas recentes`
-                    });
-                }
-
-                if (s.selectiveEvasionAulas >= 3) {
-                    // Para gazeta (renomeada para Risco de Abandono), reincidência é se ele já teve gazetas no passado
-                    // mas a regra de "sair e voltar" é mais clara no abandono consecutivo.
-                    // Aplicaremos a lógica de reincidência também aqui se ele já teve um histórico de gazetas alto
-                    triggers.push({
-                        type: 'warning',
-                        title: 'RISCO DE ABANDONO',
-                        student: s.name,
-                        class: s.class,
-                        reason: `ESTÁ HÁ ${s.selectiveEvasionAulas} DIAS SEM VIR À ESCOLA`
-                    });
-                }
-            });
-
-            document.getElementById('kpi-alertas').textContent = triggers.length;
-
-            // Render Triggers
-            const tCont = document.getElementById('triggers-container');
-            if (triggers.length === 0) {
-                tCont.innerHTML = '<p style="color: #94a3b8; font-style: italic;">Nenhum risco crítico detectado.</p>';
-            } else {
-                tCont.innerHTML = triggers.slice(0, 10).map(t => {
-                    const id = `mon_${t.student}_${t.class}`.replace(/\s+/g, '_');
-                    const isActive = localStorage.getItem(id) === 'true';
-                    return `
-                    <div class="trigger-item ${t.type === 'danger' ? 'trigger-danger' : 'trigger-warning'}">
-                        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                            <div style="flex: 1;">
-                                <div style="display:flex; justify-content:space-between; align-items:center;">
-                                    <strong style="color: ${t.type === 'danger' ? '#ef4444' : '#d97706'}; font-size: 0.8rem;">${t.title}</strong>
-                                    <span class="risk-badge" style="background: white; border: 1px solid #ddd;">${t.class}</span>
-                                </div>
-                                <div style="font-weight: 700; margin: 5px 0; font-size: 0.85rem;">${t.student} - ${t.class}</div>
-                                <div style="font-size: 0.8rem; color: #64748b;">${t.reason}</div>
-                            </div>
-                            <div style="margin-left: 15px;">
-                                <button class="btn-monitor ${isActive ? 'active' : ''}" onclick="toggleMonitor('${id}', this)">${isActive ? 'Monitorado' : 'Monitorar'}</button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                }).join('');
-            }
-
-            // Ranking Turma
             const rCont = document.getElementById('class-ranking-container');
-            const ranking = Object.entries(classes)
-                .map(([name, s]) => ({ name, freq: ((s.present / s.total) * 100).toFixed(0) }))
-                .sort((a, b) => b.freq - a.freq);
-
-            rCont.innerHTML = `<table>
-                <thead><tr><th>Turma</th><th>Frequência</th></tr></thead>
-                <tbody>${ranking.map(r => `<tr><td>${r.name}</td><td style="font-weight:700; color:#3f51b5;">${r.freq}%</td></tr>`).join('')}</tbody>
-            </table>`;
-
-
-            // Ranking Professor (Gazeta)
-            const pCont = document.getElementById('professor-ranking-container');
-            const rankingProf = Object.entries(professors)
-                .map(([name, s]) => ({ name, gazetas: s.gazetaAulas }))
-                .sort((a, b) => b.gazetas - a.gazetas);
-
-            pCont.innerHTML = `<table>
-                <thead><tr><th>Professor</th><th>Total Aulas Perdidas (Gazeta)</th></tr></thead>
-                <tbody>
-                    ${rankingProf.map(r => `<tr><td>${r.name}</td><td style="font-weight:700; color:#ef4444;">${r.gazetas}</td></tr>`).join('')}
-                    ${rankingProf.length === 0 ? '<tr><td colspan="2" style="color:#94a3b8; font-style:italic; text-align:center;">Nenhuma gazeta detectada.</td></tr>' : ''}
-                </tbody>
-            </table>`;
-
-            // Top Faltosos
+            const ranking = Object.entries(classes).map(([name, s]) => ({ name, freq: ((s.present / s.total) * 100).toFixed(0) })).sort((a, b) => b.freq - a.freq);
+            rCont.innerHTML = `<table><thead><tr><th>Turma</th><th>Freq.</th></tr></thead><tbody>${ranking.map(r => `<tr><td>${r.name}</td><td style="font-weight:700;">${r.freq}%</td></tr>`).join('')}</tbody></table>`;
+            
             const fCont = document.getElementById('top-faltosos-container');
-            const topF = Object.values(students).sort((a, b) => b.absences - a.absences).slice(0, 10);
-            fCont.innerHTML = `<table>
-                <thead><tr><th>Aluno</th><th>Dias de Falta</th><th>Status</th></tr></thead>
-                <tbody>${topF.map(s => {
-                const id = `mon_${s.name}_${s.class}`.replace(/\s+/g, '_');
-                const isActive = localStorage.getItem(id) === 'true';
-                return `<tr>
-                        <td>${s.name} - ${s.class}</td>
-                        <td style="color:#ef4444; font-weight:700;">${s.absences}</td>
-                        <td><button class="btn-monitor ${isActive ? 'active' : ''}" onclick="toggleMonitor('${id}', this)">${isActive ? 'Monitorado' : 'Monitorar'}</button></td>
-                    </tr>`;
-            }).join('')}</tbody>
-            </table>`;
-
-            // Top Gazeteiros
+            const topF = Object.values(students).filter(s => s.absences > 0).sort((a, b) => b.absences - a.absences).slice(0, 10);
+            fCont.innerHTML = `<table><thead><tr><th>Aluno</th><th>Faltas</th></tr></thead><tbody>${topF.map(s => `<tr><td>${s.name}</td><td style="color:#ef4444; font-weight:700;">${s.absences}</td></tr>`).join('')}</tbody></table>`;
+            
             const gCont = document.getElementById('top-gazeteiros-container');
-            const topG = Object.values(students).sort((a, b) => b.selectiveEvasionAulas - a.selectiveEvasionAulas).slice(0, 10);
-            gCont.innerHTML = `<table>
-                <thead><tr><th>Aluno</th><th>Aulas Perdidas</th><th>Status</th></tr></thead>
-                <tbody>${topG.filter(s => s.selectiveEvasionAulas > 0).map(s => {
-                const id = `mon_${s.name}_${s.class}`.replace(/\s+/g, '_');
-                const isActive = localStorage.getItem(id) === 'true';
-                return `<tr>
-                        <td>${s.name} - ${s.class}</td>
-                        <td style="color:#f59e0b; font-weight:700;">${s.selectiveEvasionAulas}</td>
-                        <td><button class="btn-monitor ${isActive ? 'active' : ''}" onclick="toggleMonitor('${id}', this)">${isActive ? 'Monitorado' : 'Monitorar'}</button></td>
-                    </tr>`;
-            }).join('')}</tbody>
-            </table>`;
+            const topG = Object.values(students).filter(s => s.gazetas > 0).sort((a, b) => b.gazetas - a.gazetas).slice(0, 10);
+            gCont.innerHTML = `<table><thead><tr><th>Aluno</th><th>Gazetas</th></tr></thead><tbody>${topG.map(s => `<tr><td>${s.name}</td><td style="color:#f59e0b; font-weight:700;">${s.gazetas}</td></tr>`).join('')}</tbody></table>`;
+            
+            const tCont = document.getElementById('triggers-container');
+            const triggers = Object.values(students).filter(s => s.absences >= 3);
+            tCont.innerHTML = triggers.length === 0 ? '<p style="color:#94a3b8; font-style:italic;">Nenhum risco detectado.</p>' : triggers.slice(0, 5).map(t => `<div class="trigger-item"><strong>ABANDONO</strong>: ${t.name} (${t.absences} faltas)</div>`).join('');
         }
 
-        function toggleMonitor(id, btn) {
-            const current = localStorage.getItem(id) === 'true';
-            const next = !current;
-            localStorage.setItem(id, next);
+        function renderTeacherSummary() {
+            const contP = document.getElementById('teacher-summary-container');
+            const contF = document.getElementById('teacher-faltas-container');
+            const dayNames = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
 
-            if (next) {
-                btn.classList.add('active');
-                btn.textContent = 'Monitorado';
-            } else {
-                btn.classList.remove('active');
-                btn.textContent = 'Monitorar';
+            // 1. Período: Da DATA_CORTE até ONTEM (Sempre excluindo o dia atual)
+            const startDate = new Date(DATA_CORTE + 'T12:00:00');
+            const brTodayStr = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo' }).format(new Date());
+            const brToday = new Date(brTodayStr + 'T12:00:00');
+
+            // Definimos o fim da análise como ONTEM, independentemente da data de corte
+            let endDate = new Date(brToday);
+            endDate.setDate(brToday.getDate() - 1);
+            endDate.setHours(23, 59, 59, 999);
+
+            // 1. OTIMIZAÇÃO: Criar índice de busca rápida O(1)
+            const launchIndex = {};
+            allData.forEach(a => {
+                const d = a.date.split('T')[0];
+                const t = normT(a.teacher_name);
+                const c = normC(a.class_name);
+                const di = normD(a.discipline);
+                if (!launchIndex[d]) launchIndex[d] = {};
+                if (!launchIndex[d][t]) launchIndex[d][t] = {};
+                if (!launchIndex[d][t][c]) launchIndex[d][t][c] = {};
+                launchIndex[d][t][c][di] = true;
+            });
+
+            const stats = {};
+            const forbiddenDates = [
+                ...suspendedDates.map(s => s.date),
+                ...nationalHolidays.map(f => f.date)
+            ];
+
+            // 2. Percorrer os dias do período
+            for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+                const dateStr = d.toISOString().split('T')[0];
+
+                // Ignorar se a data estiver na lista de suspensões
+                if (forbiddenDates.includes(dateStr)) continue;
+
+                const dayName = dayNames[d.getDay()];
+                if (dayName === 'Sábado' || dayName === 'Domingo') continue;
+
+                // Segurança extra: nunca processar hoje ou o futuro
+                if (dateStr >= brTodayStr) break;
+
+                const sched = globalSchedule.filter(s => s.day_of_week === dayName && s.teacher_name !== 'HORÁRIO VAGO');
+                const dailySnap = {};
+
+                sched.forEach(s => {
+                    if (!dailySnap[s.teacher_name]) dailySnap[s.teacher_name] = { sched: [], recCount: 0 };
+                    dailySnap[s.teacher_name].sched.push(s);
+
+                    const sT = normT(s.teacher_name);
+                    const sC = normC(s.class_group);
+                    const sD = normD(s.discipline);
+
+                    // Busca O(1) no índice
+                    let found = false;
+                    if (launchIndex[dateStr] && launchIndex[dateStr][sT] && launchIndex[dateStr][sT][sC]) {
+                        // Verifica disciplina (match exato ou parcial)
+                        const dys = Object.keys(launchIndex[dateStr][sT][sC]);
+                        if (dys.some(di => di === sD || sD.includes(di) || di.includes(sD))) {
+                            found = true;
+                        }
+                    }
+                    if (found) dailySnap[s.teacher_name].recCount++;
+                });
+
+                Object.entries(dailySnap).forEach(([tName, data]) => {
+                    if (!stats[tName]) stats[tName] = { name: tName, abs: 0, pend: 0, fDet: [], pDet: [] };
+                    const t = stats[tName];
+                    const dDisp = dateStr.split('-').reverse().slice(0, 2).join('/');
+
+                    if (data.recCount === 0) {
+                        // Filtro de professores genéricos aplicado APENAS na lista de faltas
+                        const uTName = (tName || "").trim().toUpperCase();
+                        const isGeneric = !uTName ||
+                            uTName === "HORARIO VAGO" ||
+                            uTName === "VAGO" ||
+                            uTName === "DISCIPLINA SEM PROFESSOR" ||
+                            uTName.startsWith("SEM PROFESSOR") ||
+                            uTName.startsWith("PROFESSOR "); // Captura "PROFESSOR 1", "PROFESSOR 2", etc.
+
+                        if (!isGeneric) {
+                            t.abs++;
+                            t.fDet.push(`📅 ${dDisp}: Falta Integral (${data.sched.length} aulas)`);
+                        }
+                    } else if (data.recCount < data.sched.length) {
+                        const diff = data.sched.length - data.recCount;
+                        t.pend += diff;
+                        t.pDet.push(`📅 ${dDisp}: ${diff} aula(s) pendente(s)`);
+                    }
+                });
             }
+            const listF = Object.values(stats).filter(t => t.abs > 0).sort((a, b) => b.abs - a.abs);
+            const listP = Object.values(stats).filter(t => t.pend > 0).sort((a, b) => b.pend - a.pend);
+            const renderItem = (t, color, isF) => {
+                const val = isF ? t.abs : t.pend; const label = isF ? `${val} falta(s)` : `${val} aula(s) pendente(s)`;
+                const safeN = t.name.replace(/'/g, "\\'"); const safeD = (isF ? t.fDet : t.pDet).join('<br>').replace(/'/g, "\\'");
+                return `<div style="display:flex; align-items:center; gap:12px; padding:12px; background:#fff; border-radius:12px; border:1px solid #e2e8f0; margin-bottom:10px;">
+                    <div style="width:40px;height:40px;border-radius:12px;background:#f1f5f9;color:#1e293b;display:flex;align-items:center;justify-content:center;font-weight:900;">${t.name.substring(0, 2)}</div>
+                    <div style="flex:1; cursor:pointer;" onclick="showPendingDetail('${safeN}', '${safeD}')">
+                        <div style="font-size:0.85rem;font-weight:700;">${t.name}</div><div style="font-size:0.65rem; color:#64748b;">${label}</div>
+                    </div>
+                    <div style="background:${color}; color:white; width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:900; cursor:pointer;" onclick="showPendingDetail('${safeN}', '${safeD}')">${val}</div>
+                </div>`;
+            };
+            contF.innerHTML = listF.length === 0 ? '<div style="text-align:center;color:#94a3b8;">✅ Nenhuma falta</div>' : listF.map(t => renderItem(t, '#ef4444', true)).join('');
+            contP.innerHTML = listP.length === 0 ? '<div style="text-align:center;color:#94a3b8;">✅ Tudo em dia</div>' : listP.map(t => renderItem(t, '#f59e0b', false)).join('');
+        }
+
+        function showPendingDetail(t, d) {
+            const ex = document.getElementById('p-det-ov'); if (ex) ex.remove();
+            const h = `<div id="p-det-ov" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:99999; display:flex; align-items:center; justify-content:center; padding:20px;">
+                <div style="background:white; width:100%; max-width:400px; border-radius:16px; overflow:hidden;">
+                    <div style="padding:20px; background:#1a237e; color:white; display:flex; justify-content:space-between;"><h3>Histórico</h3><span style="cursor:pointer;" onclick="document.getElementById('p-det-ov').remove()">&times;</span></div>
+                    <div style="padding:25px;"><h2 style="font-size:1.1rem;">${t}</h2><div style="max-height:300px; overflow-y:auto; background:#f8fafc; padding:15px; border-radius:10px; font-size:0.85rem;">${d}</div></div>
+                </div>
+            </div>`;
+            document.body.insertAdjacentHTML('beforeend', h);
         }
 
         function renderRecentTable(data) {
             const body = document.getElementById('recent-records-body');
             body.innerHTML = data.map(d => {
-                // Formatar data sem deslocamento de fuso horário (YYYY-MM-DD -> DD/MM/YYYY)
-                const [year, month, day] = d.date.split('T')[0].split('-');
-                const dateDisplay = `${day}/${month}/${year}`;
-
-                const isAbsent = d.status.toLowerCase() === 'absent' || d.status.toLowerCase() === 'faltou';
-                return `
-                    <tr>
-                        <td style="font-size: 0.8rem; color: #64748b;">${dateDisplay}</td>
-                        <td style="font-weight: 700;">${d.student_name}</td>
-                        <td>${d.class_name}</td>
-                        <td style="font-size: 0.8rem;">${d.discipline}</td>
-                        <td style="font-size: 0.8rem; color: #64748b;">${d.teacher_name}</td>
-                        <td><span class="risk-badge ${isAbsent ? 'status-danger' : 'status-success'}" style="${!isAbsent ? 'background:#dcfce7; color:#15803d;' : ''}">${d.status}</span></td>
-                    </tr>
-                `;
+                const displayDate = d.date.split('T')[0].split('-').reverse().join('/');
+                return `<tr><td>${displayDate}</td><td>${d.student_name}</td><td>${d.class_name}</td><td>${d.discipline}</td><td>${d.teacher_name}</td><td><span class="risk-badge" style="background:#dcfce7;color:#15803d;">${d.status}</span></td></tr>`;
             }).join('');
         }
 
-        // --- LÓGICA DO RELATÓRIO ---
-        function openReportModal() {
-            document.getElementById('report-modal').style.display = 'flex';
-            // Obter data local no formato YYYY-MM-DD
-            const now = new Date();
-            const year = now.getFullYear();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const day = String(now.getDate()).padStart(2, '0');
-            const localToday = `${year}-${month}-${day}`;
+        async function generateDailyReport() {
+            const btn = document.querySelector('.btn-report');
+            const originalText = btn.innerHTML;
 
-            document.getElementById('report-date').value = localToday;
-            generateReport();
-        }
-
-        function closeReportModal() {
-            document.getElementById('report-modal').style.display = 'none';
-        }
-
-        function generateReport() {
-            const selectedDate = document.getElementById('report-date').value;
-            const resultsDiv = document.getElementById('report-results');
-            const printBtn = document.getElementById('print-btn');
-
-            if (!selectedDate) return;
-
-            // Filtrar faltas na data selecionada
-            const absences = allData.filter(d => {
-                const itemDate = d.date.split('T')[0];
-                const status = d.status.toLowerCase();
-                return itemDate === selectedDate && (status === 'absent' || status === 'faltou');
-            });
-
-            if (absences.length === 0) {
-                resultsDiv.innerHTML = `<p style="text-align:center; color:#94a3b8; padding: 40px;">Nenhum registro de falta encontrado para o dia ${selectedDate.split('-').reverse().join('/')}.</p>`;
-                printBtn.style.display = 'none';
+            // 1. Capturar a data selecionada no calendário
+            const dateInput = document.getElementById('report-date-picker').value;
+            if (!dateInput) {
+                alert('Por favor, selecione uma data no calendário.');
                 return;
             }
 
-            // Agrupar: Professor -> Turma -> Alunos (com mais detalhes)
-            const grouping = {};
-            absences.forEach(a => {
-                if (!grouping[a.teacher_name]) grouping[a.teacher_name] = {};
-                if (!grouping[a.teacher_name][a.class_name]) grouping[a.teacher_name][a.class_name] = [];
-                grouping[a.teacher_name][a.class_name].push({
-                    student: a.student_name,
-                    discipline: a.discipline || a.subject_name || 'N/A',
-                    fullDateTime: a.created_at ? new Date(a.created_at).toLocaleString('pt-BR') : '?'
-                });
-            });
+            btn.innerHTML = '<span>⏳ PROCESSANDO...</span>';
+            btn.disabled = true;
 
-            // Renderizar HTML
-            let html = `<h2 style="text-align:center; color:#1a237e; margin-bottom: 25px;">Relação de Alunos Faltosos - ${selectedDate.split('-').reverse().join('/')}</h2>`;
+            try {
+                const targetDate = dateInput;
+                const displayDate = targetDate.split('-').reverse().join('/');
 
-            // Ordenar professores alfabeticamente
-            const sortedTeachers = Object.keys(grouping).sort();
+                // 2. BUSCAR DADOS DIRETOS DO SUPABASE (Otimizado para Grandes Volumes)
+                const { data: dailyRecords, error: fetchErr } = await supabaseClient
+                    .from('ef_attendance')
+                    .select('*')
+                    .eq('date', targetDate);
 
-            sortedTeachers.forEach(teacher => {
-                html += `<div class="report-section"><h3>👨‍🏫 Professor: ${teacher}</h3>`;
+                if (fetchErr) throw fetchErr;
 
-                // Ordenar turmas
-                const sortedClasses = Object.keys(grouping[teacher]).sort();
+                if (!dailyRecords || dailyRecords.length === 0) {
+                    alert('Nenhum dado de frequência encontrado para o dia ' + displayDate);
+                    return;
+                }
 
-                sortedClasses.forEach(className => {
-                    html += `
-                        <div class="report-class-group">
-                            <div class="report-class-header">Turma: ${className}</div>
-                            <ul class="report-student-list" style="grid-template-columns: 1fr;">
-                                ${grouping[teacher][className].sort((a, b) => a.student.localeCompare(b.student)).map(item => `
-                                    <li class="report-student-item" style="display:flex; justify-content:space-between;">
-                                        <span><strong>${item.student}</strong> <small>(${item.discipline})</small></span>
-                                        <span style="color:#64748b; font-size: 0.7rem;">Registro em: ${item.fullDateTime}</span>
-                                    </li>
-                                `).join('')}
-                            </ul>
-                        </div>
-                    `;
+                // Filtrar registros válidos (que batem com o horário)
+                const dayNames = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
+                const recordDateObj = new Date(targetDate + 'T12:00:00');
+                const recordDayName = dayNames[recordDateObj.getDay()];
+
+                const validRecords = dailyRecords.filter(record => {
+                    return globalSchedule.some(s =>
+                        isSameT(s.teacher_name, record.teacher_name) &&
+                        normC(s.class_group) === normC(record.class_name) &&
+                        (normD(s.discipline) === normD(record.discipline) || s.discipline.toUpperCase().includes(normD(record.discipline))) &&
+                        s.day_of_week === recordDayName
+                    );
                 });
 
-                html += `</div>`;
-            });
+                if (validRecords.length === 0) {
+                    alert('Nenhum registro validado pelo horário para o dia ' + displayDate);
+                    return;
+                }
 
-            resultsDiv.innerHTML = html;
-            printBtn.style.display = 'block';
+                const studentStats = {};
+                validRecords.forEach(d => {
+                    const key = `${d.class_name}|${d.student_name}`;
+                    if (!studentStats[key]) studentStats[key] = { name: d.student_name, class: d.class_name, pres: 0, abs: 0 };
+                    if (d.status.toLowerCase().includes('present')) studentStats[key].pres++;
+                    else studentStats[key].abs++;
+                });
+
+                const integralAbsences = Object.values(studentStats).filter(s => s.pres === 0 && s.abs > 0);
+
+                // 3. Agrupar por Turma
+                const grouped = {};
+                integralAbsences.forEach(s => {
+                    if (!grouped[s.class]) grouped[s.class] = [];
+                    grouped[s.class].push(s.name);
+                });
+
+                // 4. Criar HTML do Relatório
+                const reportContent = document.createElement('div');
+                // Centralizamos o conteúdo, a margem de 2cm agora será controlada pelo html2pdf globalmente em todas as páginas
+                reportContent.style.padding = '0 10mm 10mm 10mm';
+                reportContent.style.width = '190mm'; // Ajuste para ocupar melhor a largura entre margens
+                reportContent.style.margin = '0';
+                reportContent.style.backgroundColor = 'white';
+                reportContent.style.fontFamily = 'Roboto, sans-serif';
+
+                let html = `
+                    <div style="text-align: center; border-bottom: 2px solid #1a237e; padding-bottom: 8px; margin-bottom: 15px;">
+                        <h1 style="color: #1a237e; margin: 0; font-size: 16px; text-transform: uppercase;">Relatório de Faltas Integrais (Diário)</h1>
+                        <p style="color: #64748b; font-size: 12px; margin: 3px 0;">Referência: <strong>${displayDate}</strong></p>
+                    </div>
+                `;
+
+                if (Object.keys(grouped).length === 0) {
+                    html += '<p style="text-align: center; color: #64748b; margin-top: 50px;">Nenhuma falta integral registrada neste dia.</p>';
+                } else {
+                    const sortedClasses = Object.keys(grouped).sort();
+                    sortedClasses.forEach(className => {
+                        html += `
+                            <div style="margin-bottom: 10px; page-break-inside: avoid;">
+                                <h2 style="background: #f8fafc; padding: 3px 8px; border-left: 3px solid #1a237e; color: #1e293b; font-size: 12px; margin-bottom: 4px; text-transform: uppercase;">${className}</h2>
+                                <ul style="list-style: none; padding: 0; margin-left: 8px;">
+                                    ${grouped[className].sort().map(name => `<li style="padding: 1px 0; border-bottom: 1px solid #f1f5f9; color: #334155; font-size: 10px;">• ${name}</li>`).join('')}
+                                </ul>
+                            </div>
+                        `;
+                    });
+                }
+
+                html += `
+                    <div style="margin-top: 20px; border-top: 1px solid #e2e8f0; padding-top: 5px; font-size: 8px; color: #94a3b8; text-align: center;">
+                        Gerado automaticamente em ${new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' })} - Sistema de Gestão EJATEC
+                    </div>
+                `;
+
+                reportContent.innerHTML = html;
+
+                // 5. Configurar e Gerar PDF
+                const opt = {
+                    margin: [20, 10, 15, 10], // [topo, esquerda, baixo, direita] - 20mm (2cm) no topo de TODAS as páginas
+                    filename: `Faltas_Integrais_${targetDate}.pdf`,
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2, scrollY: 0, useCORS: true },
+                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                };
+
+                // Gera o PDF e abre em uma nova aba
+                const worker = html2pdf().set(opt).from(reportContent);
+                const pdfBlobUrl = await worker.outputPdf('bloburl');
+                window.open(pdfBlobUrl, '_blank');
+
+            } catch (err) {
+                console.error('Erro ao gerar relatório:', err);
+                alert('Erro ao gerar o relatório detalhado.');
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
         }
 
-        function previewPDF() {
-            const element = document.getElementById('report-results');
-            const selectedDate = document.getElementById('report-date').value.split('-').reverse().join('-');
+        async function init() {
+            document.getElementById('display-data-corte').textContent = DATA_CORTE.split('-').reverse().join('/');
 
-            const headerHtml = `
-                <div style="text-align:center; margin-bottom: 30px; border-bottom: 2px solid #1a237e; padding-bottom: 15px;">
-                    <h1 style="color:#1a237e; margin:0; font-size: 22pt; text-transform: uppercase;">CETI AURISTELA SOARES</h1>
-                    <h2 style="color:#3f51b5; margin:10px 0 0 0; font-size: 16pt;">EJA TEC 2026 - RELATÓRIO DIÁRIO DE FALTAS</h2>
-                    <p style="margin: 10px 0 0 0; color: #64748b; font-weight: bold;">DATA DO RELATÓRIO: ${selectedDate.split('-').reverse().join('/')}</p>
+            // Inicializar seletor de data com 'Hoje' (Brasília)
+            const brToday = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo' }).format(new Date());
+            document.getElementById('report-date-picker').value = brToday;
+
+            // Buscar feriados nacionais automaticamente
+            await fetchNationalHolidays(new Date().getFullYear());
+
+            // Injetar modais no final do body
+            const modalHtml = `
+                <div id="modal-suspension" class="modal-overlay">
+                    <div class="modal-card">
+                        <div class="modal-header">
+                            <h3>🚫 Suspender Aulas</h3>
+                            <span class="modal-close" onclick="closeSuspensionModal()">&times;</span>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label>DATA SEM AULA:</label>
+                                <input type="date" id="sus-date" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>MOTIVO / JUSTIFICATIVA:</label>
+                                <textarea id="sus-reason" class="form-control" rows="3" placeholder="Ex: Greve de ônibus, Feriado Municipal..."></textarea>
+                            </div>
+                            <div id="suspensions-list-container" class="suspensions-list"></div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn-action secondary" onclick="closeSuspensionModal()">CANCELAR</button>
+                            <button class="btn-action" onclick="saveSuspension()">SALVAR DIA</button>
+                        </div>
+                    </div>
                 </div>
             `;
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
 
-            const footerHtml = `
-                <div style="margin-top: 30px; text-align: center; font-size: 0.8rem; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 10px;">
-                    Documento gerado em ${new Date().toLocaleString('pt-BR')}
-                </div>
-            `;
+            fetchData();
+            setInterval(fetchData, 60000);
+        }
 
-            // Criar elemento temporário com todo o conteúdo
-            const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = headerHtml + element.innerHTML + footerHtml;
-            tempDiv.style.padding = '20px';
-            tempDiv.style.fontFamily = 'Roboto, sans-serif';
+        // Funções do Modal de Suspensão
+        function openSuspensionModal() {
+            document.getElementById('modal-suspension').style.display = 'flex';
+            updateSuspensionsUI();
+        }
 
-            const opt = {
-                margin: 10,
-                filename: `relatorio_faltas_${selectedDate}.pdf`,
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
+        function closeSuspensionModal() {
+            document.getElementById('modal-suspension').style.display = 'none';
+        }
 
-            // Gerar e baixar o PDF
-            html2pdf().set(opt).from(tempDiv).save();
+        async function saveSuspension() {
+            const date = document.getElementById('sus-date').value;
+            const reason = document.getElementById('sus-reason').value;
+
+            if (!date || !reason) {
+                alert("Preencha a data e o motivo.");
+                return;
+            }
+
+            try {
+                const { error } = await supabaseClient.from('ef_suspensions').insert([{ date, reason }]);
+                if (error) throw error;
+                alert("Dia marcado com sucesso!");
+                fetchData();
+            } catch (err) {
+                alert("Erro ao salvar: " + err.message);
+            }
+        }
+
+        async function deleteSuspension(id) {
+            if (!confirm("Deseja realmente remover esta suspensão?")) return;
+            try {
+                const { error } = await supabaseClient.from('ef_suspensions').delete().eq('id', id);
+                if (error) throw error;
+                fetchData();
+            } catch (err) {
+                alert("Erro ao excluir: " + err.message);
+            }
+        }
+
+        function updateSuspensionsUI() {
+            const cont = document.getElementById('suspensions-list-container');
+            if (!cont) return;
+
+            const hasSuspensions = suspendedDates.length > 0;
+            const hasHolidays = nationalHolidays.length > 0;
+
+            if (!hasSuspensions && !hasHolidays) {
+                cont.innerHTML = '<p style="color:#94a3b8; font-style:italic;">Nenhum dia suspenso ou feriado.</p>';
+                return;
+            }
+
+            let html = '';
+
+            if (hasSuspensions) {
+                html += '<strong>DIAS SUSPENSOS MANUALMENTE:</strong>' + suspendedDates.map(s => `
+                    <div class="suspension-item">
+                        <span>${s.date.split('-').reverse().join('/')} - ${s.reason}</span>
+                        <span class="suspension-del" onclick="deleteSuspension('${s.id}')">EXCLUIR</span>
+                    </div>
+                `).join('');
+            }
+
+            if (hasHolidays) {
+                html += '<br><strong>FERIADOS NACIONAIS (AUTO):</strong>' + nationalHolidays.map(h => `
+                    <div class="suspension-item" style="background: #f1f5f9; color: #64748b; font-style: italic;">
+                        <span>${h.date.split('-').reverse().join('/')} - ${h.name}</span>
+                        <span>(AUTO)</span>
+                    </div>
+                `).join('');
+            }
+
+            cont.innerHTML = html;
+        }
+
+        async function fetchNationalHolidays(year) {
+            try {
+                // Tenta buscar da BrasilAPI (gratuita e específica para BR)
+                const response = await fetch(`https://brasilapi.com.br/api/feriados/v1/${year}`);
+                if (!response.ok) throw new Error("Erro ao buscar feriados");
+                nationalHolidays = await response.json();
+                console.log(`${nationalHolidays.length} feriados carregados para ${year}`);
+            } catch (err) {
+                console.error("Falha ao carregar feriados nacionais:", err);
+                nationalHolidays = [];
+            }
         }
 
         init();
