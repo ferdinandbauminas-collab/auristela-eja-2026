@@ -46,7 +46,7 @@ INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teac
 INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Terça-feira', 4, 'MOD I A ALT', 'ED. FÍSICA A', 'CARLOS AUGUSTO');
 INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Terça-feira', 1, 'MOD III A', 'MATEMÁTICA', 'WESLEY BEZERRA PORTELA FREITAS');
 INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Terça-feira', 2, 'MOD III A', 'MATEMÁTICA', 'WESLEY BEZERRA PORTELA FREITAS');
-INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Terça-feira', 3, 'MOD III A', 'ELETIVA', 'PROFESSOR 1');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Terça-feira', 3, 'MOD III A', 'ELETIVA', 'SALOMÃO');
 INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Terça-feira', 4, 'MOD III A', 'LOGICA DE PROGRAMAÇÃO', 'MARCOS AURELIO MATOS DOS SANTOS');
 INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Terça-feira', 1, 'MOD III B', 'LÍNGUA PORTUGUESA', 'FRANCINEUDA DA SILVA SOUSA');
 INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Terça-feira', 2, 'MOD III B', 'PROJETO DE APRENDIZAGEM INTERDISCIPLINAR', 'GERSON DOS SANTOS');
@@ -65,7 +65,7 @@ INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teac
 INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Terça-feira', 3, 'MOD V C', 'BIOLOGIA', 'HELANNE BEATRIZ SILVA OLIVEIRA');
 INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Terça-feira', 4, 'MOD V C', 'LE', 'LINDELVÂNIA');
 INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Terça-feira', 1, 'MOD V D', 'LE', 'LINDELVÂNIA');
-INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Terça-feira', 2, 'MOD V D', 'ELETIVA', 'HORÁRIO VAGO');
+INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Terça-feira', 2, 'MOD V D', 'ELETIVA', 'DENILSON DAVID DA SILVA SANTOS');
 INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Terça-feira', 3, 'MOD V D', 'SOCIOLOGIA', 'DANIEL MAGALHAES CHAVES');
 INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Terça-feira', 4, 'MOD V D', 'BIOLOGIA', 'HELANNE BEATRIZ SILVA OLIVEIRA');
 INSERT INTO ef_schedule (day_of_week, slot_number, class_group, discipline, teacher_name) VALUES ('Terça-feira', 1, 'MOD I A MARK', 'RPMD', 'GERSON DOS SANTOS');
