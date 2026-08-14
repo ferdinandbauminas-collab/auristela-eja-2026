@@ -50,6 +50,12 @@ const ActivityRegistry = ({ teacher, onBack }: Props) => {
 
     useEffect(() => { loadActivities(); }, [loadActivities]);
 
+    useEffect(() => {
+        if (reportMode) {
+            window.requestAnimationFrame(() => window.scrollTo({ top: 0, left: 0, behavior: 'auto' }));
+        }
+    }, [reportMode]);
+
     const createActivity = async () => {
         if (!theme.trim() || !discipline || !className) {
             setMessage('Preencha o tema, a disciplina e a turma.');
@@ -268,7 +274,7 @@ const ActivityRegistry = ({ teacher, onBack }: Props) => {
                             ))}
                         </div>
                     )}
-                    <button onClick={() => { setReportMode(true); setMessage(''); window.scrollTo({ top: 0, behavior: 'smooth' }); }} style={{ ...saveStyle, marginTop: '22px', background: '#1d4ed8' }}>
+                    <button type="button" onClick={() => { setMessage(''); setReportMode(true); }} style={{ ...saveStyle, marginTop: '22px', background: '#1d4ed8' }}>
                         <FileText size={20} /> GERAR RELATÓRIO
                     </button>
                 </section>
