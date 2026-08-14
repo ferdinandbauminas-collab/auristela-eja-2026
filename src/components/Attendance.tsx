@@ -4,7 +4,8 @@ import type { Teacher, Student, Discipline, AttendanceRecord } from '../lib/supa
 import { Check, X, Send, LogOut, Users, BookOpen, Calendar as CalendarIcon, ChevronRight, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import CustomSelect from './CustomSelect';
-import { CLASS_STORAGE_MAP, getOfficialDisciplines } from '../lib/officialSchedule';
+import { getOfficialDisciplines } from '../lib/officialSchedule';
+import { getOfficialStudents } from '../lib/officialStudents';
 
 interface Props {
     teacher: Teacher;
@@ -55,17 +56,11 @@ const Attendance = ({ teacher, onLogout }: Props) => {
 
     useEffect(() => {
         if (selectedClass) {
-            async function loadStudents() {
-                const storageClass = CLASS_STORAGE_MAP[selectedClass] || selectedClass;
-                const { data, error } = await supabase.from('ef_students').select('*').eq('class_id', storageClass).order('name');
-                if (!error && data) {
-                    setStudents(data);
-                    const initial: Record<string, 'present' | 'absent'> = {};
-                    data.forEach(s => initial[s.id] = 'present');
-                    setAttendance(initial);
-                }
-            }
-            loadStudents();
+            const officialStudents = getOfficialStudents(selectedClass);
+            setStudents(officialStudents);
+            const initial: Record<string, 'present' | 'absent'> = {};
+            officialStudents.forEach(student => initial[student.id] = 'present');
+            setAttendance(initial);
         }
     }, [selectedClass]);
 
