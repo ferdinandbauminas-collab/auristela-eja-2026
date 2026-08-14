@@ -5,9 +5,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 // --- COMPONENTS ---
 import Login from './components/Login';
 import Attendance from './components/Attendance';
+import TeacherHome from './components/TeacherHome';
+import ActivityRegistry from './components/ActivityRegistry';
+
+type TeacherView = 'menu' | 'attendance' | 'activities';
 
 const App = () => {
   const [currentTeacher, setCurrentTeacher] = useState<Teacher | null>(null);
+  const [teacherView, setTeacherView] = useState<TeacherView>('menu');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -37,7 +42,7 @@ const App = () => {
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.4 }}
           >
-            <Login onLogin={setCurrentTeacher} />
+            <Login onLogin={(teacher) => { setCurrentTeacher(teacher); setTeacherView('menu'); }} />
           </motion.div>
         ) : (
           <motion.div
@@ -47,7 +52,16 @@ const App = () => {
             exit={{ opacity: 0, x: -30 }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
           >
-            <Attendance teacher={currentTeacher} onLogout={() => setCurrentTeacher(null)} />
+            {teacherView === 'menu' && (
+              <TeacherHome
+                teacher={currentTeacher}
+                onAttendance={() => setTeacherView('attendance')}
+                onActivities={() => setTeacherView('activities')}
+                onLogout={() => setCurrentTeacher(null)}
+              />
+            )}
+            {teacherView === 'attendance' && <Attendance teacher={currentTeacher} onLogout={() => setTeacherView('menu')} />}
+            {teacherView === 'activities' && <ActivityRegistry teacher={currentTeacher} onBack={() => setTeacherView('menu')} />}
           </motion.div>
         )}
       </AnimatePresence>

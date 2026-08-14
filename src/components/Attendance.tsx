@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import type { Teacher, Student, Discipline, AttendanceRecord } from '../lib/supabase';
-import { Check, X, Send, LogOut, Users, BookOpen, Calendar as CalendarIcon, ChevronRight, ArrowLeft } from 'lucide-react';
+import { Check, X, Send, Users, BookOpen, Calendar as CalendarIcon, ChevronRight, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import CustomSelect from './CustomSelect';
 import { getOfficialDisciplines } from '../lib/officialSchedule';
@@ -700,6 +700,7 @@ const Attendance = ({ teacher, onLogout }: Props) => {
             {!isWizardMode && !isSuccess && (
                 <button
                     onClick={onLogout}
+                    aria-label="Voltar ao menu do professor"
                     style={{
                         position: 'fixed', top: '20px', right: '20px',
                         border: 'none', background: 'rgba(239, 68, 68, 0.1)',
@@ -707,7 +708,7 @@ const Attendance = ({ teacher, onLogout }: Props) => {
                         cursor: 'pointer', zIndex: 10
                     }}
                 >
-                    <LogOut size={22} />
+                    <ArrowLeft size={22} />
                 </button>
             )}
         </div>
