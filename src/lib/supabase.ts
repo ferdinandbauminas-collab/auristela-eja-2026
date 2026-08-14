@@ -47,3 +47,25 @@ export interface AttendanceRecord {
     status: 'present' | 'absent';
     date: string;
 }
+
+export interface Activity {
+    id: string;
+    teacher_id: string;
+    teacher_name: string;
+    discipline: string;
+    class_name: string;
+    theme: string;
+    activity_date: string;
+    created_at: string;
+}
+
+export interface ActivityResult {
+    id: string;
+    activity_id: string;
+    student_name: string;
+    status: 'pendente' | 'realizou' | 'parcial' | 'nao_realizou' | 'faltou';
+    grade?: number | null;
+    notes?: string | null;
+    completed_at?: string | null;
+    updated_at: string;
+}
