@@ -24,6 +24,8 @@ const ActivityRegistry = ({ teacher, onBack }: Props) => {
     const [results, setResults] = useState<ActivityResult[]>([]);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [savingResults, setSavingResults] = useState(false);
+    const [resultsChanged, setResultsChanged] = useState(false);
     const [message, setMessage] = useState('');
 
     useEffect(() => {
@@ -73,7 +75,7 @@ const ActivityRegistry = ({ teacher, onBack }: Props) => {
     };
 
     const openActivity = async (activity: Activity) => {
-        setSelectedActivity(activity); setLoading(true); setMessage('');
+        setSelectedActivity(activity); setLoading(true); setMessage(''); setResultsChanged(false);
         const { data, error } = await supabase.from('ef_activity_results').select('*')
             .eq('activity_id', activity.id).order('student_name');
         if (error) setMessage(`Não foi possível abrir a atividade: ${error.message}`);
@@ -82,20 +84,35 @@ const ActivityRegistry = ({ teacher, onBack }: Props) => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    const updateStatus = async (result: ActivityResult, status: ActivityResult['status']) => {
-        setResults(current => current.map(item => item.id === result.id ? { ...item, status } : item));
-        const { error } = await supabase.from('ef_activity_results').update({
-            status, completed_at: status === 'realizou' ? today() : null, updated_at: new Date().toISOString()
-        }).eq('id', result.id);
-        if (error) {
-            setResults(current => current.map(item => item.id === result.id ? result : item));
-            setMessage(`Não foi possível atualizar ${result.student_name}: ${error.message}`);
+    const updateStatus = (result: ActivityResult, status: ActivityResult['status']) => {
+        setResults(current => current.map(item => item.id === result.id ? {
+            ...item, status, completed_at: status === 'realizou' ? today() : null
+        } : item));
+        setResultsChanged(true);
+        setMessage('');
+    };
+
+    const allStudentsSelected = results.length > 0 && results.every(result => result.status !== 'pendente');
+
+    const saveResults = async () => {
+        if (!allStudentsSelected) return;
+        setSavingResults(true); setMessage('');
+        const updatedAt = new Date().toISOString();
+        const { error } = await supabase.from('ef_activity_results').upsert(
+            results.map(result => ({ ...result, updated_at: updatedAt }))
+        );
+        if (error) setMessage(`Não foi possível salvar os resultados: ${error.message}`);
+        else {
+            setResults(current => current.map(result => ({ ...result, updated_at: updatedAt })));
+            setResultsChanged(false);
+            setMessage('Resultados da atividade salvos com sucesso.');
         }
+        setSavingResults(false);
     };
 
     if (selectedActivity) return (
         <div style={pageStyle}>
-            <button onClick={() => { setSelectedActivity(null); setResults([]); setMessage(''); }} style={backStyle}><ArrowLeft size={20} /> VOLTAR ÀS ATIVIDADES</button>
+            <button onClick={() => { setSelectedActivity(null); setResults([]); setMessage(''); setResultsChanged(false); }} style={backStyle}><ArrowLeft size={20} /> VOLTAR ÀS ATIVIDADES</button>
             <div style={{ maxWidth: '620px', width: '100%', margin: '24px auto' }}>
                 <p style={eyebrowStyle}>{selectedActivity.discipline} · {selectedActivity.class_name}</p>
                 <h1 style={headingStyle}>{selectedActivity.theme}</h1>
@@ -113,6 +130,17 @@ const ActivityRegistry = ({ teacher, onBack }: Props) => {
                                 </div>
                             </div>
                         ))}
+                        {allStudentsSelected && (
+                            <button onClick={saveResults} disabled={savingResults || !resultsChanged} style={{ ...saveStyle, marginTop: '12px', opacity: !resultsChanged ? 0.65 : 1 }}>
+                                {savingResults ? <LoaderCircle size={20} /> : <Save size={20} />}
+                                {savingResults ? 'SALVANDO...' : resultsChanged ? 'SALVAR RESULTADOS DA ATIVIDADE' : 'RESULTADOS SALVOS'}
+                            </button>
+                        )}
+                        {!allStudentsSelected && (
+                            <p style={{ color: '#64748b', textAlign: 'center', padding: '10px', fontSize: '0.85rem' }}>
+                                Selecione o resultado de todos os alunos para liberar o botão de salvar.
+                            </p>
+                        )}
                     </div>
                 )}
             </div>
