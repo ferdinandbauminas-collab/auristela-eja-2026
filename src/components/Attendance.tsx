@@ -4,6 +4,7 @@ import type { Teacher, Student, Discipline, AttendanceRecord } from '../lib/supa
 import { Check, X, Send, LogOut, Users, BookOpen, Calendar as CalendarIcon, ChevronRight, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import CustomSelect from './CustomSelect';
+import { CLASS_STORAGE_MAP, getOfficialDisciplines } from '../lib/officialSchedule';
 
 interface Props {
     teacher: Teacher;
@@ -32,24 +33,31 @@ const Attendance = ({ teacher, onLogout }: Props) => {
     const [isDoubleLesson, setIsDoubleLesson] = useState(false);
 
     useEffect(() => {
-        async function loadData() {
-            try {
-                const { data, error } = await supabase.from('ef_classes').select('*').eq('teacher_id', teacher.id);
-                if (error) throw error;
-                if (data && data.length > 0) {
-                    setDisciplines(data as Discipline[]);
-                }
-            } catch (err) {
-                console.error('Erro ao buscar disciplinas:', err);
+        const officialDisciplines = getOfficialDisciplines(teacher);
+        setDisciplines(officialDisciplines);
+        const officialNames = Array.from(new Set(officialDisciplines.map(d => d.name.trim())));
+        if (officialNames.length === 1) {
+            setSelectedDiscipline(officialDisciplines.find(d => d.name.trim() === officialNames[0]) || null);
+        } else {
+            setSelectedDiscipline(null);
+        }
+    }, [teacher]);
+
+    // Auto-seleção de turma se a disciplina selecionada possuir apenas uma turma única
+    useEffect(() => {
+        if (selectedDiscipline) {
+            const availableClasses = disciplines.filter(d => d.name === selectedDiscipline.name);
+            if (availableClasses.length === 1) {
+                setSelectedClass(availableClasses[0].grade);
             }
         }
-        loadData();
-    }, [teacher]);
+    }, [selectedDiscipline, disciplines]);
 
     useEffect(() => {
         if (selectedClass) {
             async function loadStudents() {
-                const { data, error } = await supabase.from('ef_students').select('*').eq('class_id', selectedClass).order('name');
+                const storageClass = CLASS_STORAGE_MAP[selectedClass] || selectedClass;
+                const { data, error } = await supabase.from('ef_students').select('*').eq('class_id', storageClass).order('name');
                 if (!error && data) {
                     setStudents(data);
                     const initial: Record<string, 'present' | 'absent'> = {};
@@ -241,7 +249,14 @@ const Attendance = ({ teacher, onLogout }: Props) => {
                             onClick={() => {
                                 setIsSuccess(false);
                                 setSelectedClass('');
-                                setSelectedDiscipline(null);
+                                
+                                const uniqueNames = Array.from(new Set(disciplines.map(d => d.name.trim())));
+                                if (uniqueNames.length === 1) {
+                                    const defaultDisc = disciplines.find(d => d.name.trim() === uniqueNames[0]);
+                                    setSelectedDiscipline(defaultDisc || null);
+                                } else {
+                                    setSelectedDiscipline(null);
+                                }
                             }}
                             style={{
                                 width: '100%',
@@ -280,12 +295,12 @@ const Attendance = ({ teacher, onLogout }: Props) => {
                         {/* SELECTION CARDS */}
                         <div style={{ display: 'grid', gap: '16px', marginBottom: '24px' }}>
                             <motion.button
-                                whileTap={{ scale: 0.98 }}
-                                onClick={() => setIsDisciplineModalOpen(true)}
+                                whileTap={{ scale: disciplineOptions.length > 1 ? 0.98 : 1 }}
+                                onClick={() => disciplineOptions.length > 1 && setIsDisciplineModalOpen(true)}
                                 style={{
                                     width: '100%', padding: '24px 24px', borderRadius: '32px',
                                     background: selectedDiscipline ? 'rgba(255,255,255,0.4)' : 'white',
-                                    cursor: 'pointer', textAlign: 'left',
+                                    cursor: disciplineOptions.length > 1 ? 'pointer' : 'default', textAlign: 'left',
                                     boxShadow: selectedDiscipline ? 'none' : '0 15px 35px -5px rgba(59, 130, 246, 0.25)',
                                     display: 'flex', alignItems: 'center', gap: '20px',
                                     border: selectedDiscipline ? '1px dashed rgba(0,0,0,0.1)' : '2px solid #3b82f6',
@@ -305,18 +320,18 @@ const Attendance = ({ teacher, onLogout }: Props) => {
                                         {selectedDiscipline ? selectedDiscipline.name : 'QUAL A DISCIPLINA?'}
                                     </h2>
                                 </div>
-                                <ChevronRight size={22} color="#cbd5e1" />
+                                {disciplineOptions.length > 1 && <ChevronRight size={22} color="#cbd5e1" />}
                             </motion.button>
 
                             <motion.button
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                whileTap={{ scale: 0.98 }}
-                                onClick={() => selectedDiscipline && setIsClassModalOpen(true)}
+                                whileTap={{ scale: selectedDiscipline && classOptions.length > 1 ? 0.98 : 1 }}
+                                onClick={() => selectedDiscipline && classOptions.length > 1 && setIsClassModalOpen(true)}
                                 style={{
                                     width: '100%', padding: '24px 24px', borderRadius: '32px',
                                     background: selectedDiscipline ? (selectedClass ? 'rgba(255,255,255,0.4)' : 'white') : 'rgba(0,0,0,0.02)',
-                                    cursor: selectedDiscipline ? 'pointer' : 'not-allowed',
+                                    cursor: selectedDiscipline ? (classOptions.length > 1 ? 'pointer' : 'default') : 'not-allowed',
                                     textAlign: 'left',
                                     boxShadow: (selectedDiscipline && !selectedClass)
                                         ? '0 15px 35px -5px rgba(59, 130, 246, 0.25)'
@@ -341,7 +356,7 @@ const Attendance = ({ teacher, onLogout }: Props) => {
                                         {selectedClass ? selectedClass : 'PARA QUAL TURMA?'}
                                     </h2>
                                 </div>
-                                <ChevronRight size={22} color="#cbd5e1" />
+                                {selectedDiscipline && classOptions.length > 1 && <ChevronRight size={22} color="#cbd5e1" />}
                             </motion.button>
 
                             {selectedClass && (

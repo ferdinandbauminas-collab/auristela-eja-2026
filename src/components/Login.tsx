@@ -4,6 +4,7 @@ import type { Teacher } from '../lib/supabase';
 import { GraduationCap, UserCheck, WifiOff } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import CustomSelect from './CustomSelect';
+import { adaptTeacherForOfficialSchedule, isOfficialTeacher } from '../lib/officialSchedule';
 
 interface Props {
     onLogin: (teacher: Teacher) => void;
@@ -25,8 +26,11 @@ const Login = ({ onLogin }: Props) => {
                 const { data, error } = await supabase.from('ef_teachers').select('*').order('name');
                 if (error) throw error;
                 if (data) {
-                    setTeachers(data);
-                    if (data.length === 0) setErrorMsg('Nenhum professor cadastrado no banco.');
+                    const officialTeachers = data
+                        .map(adaptTeacherForOfficialSchedule)
+                        .filter(isOfficialTeacher);
+                    setTeachers(officialTeachers);
+                    if (officialTeachers.length === 0) setErrorMsg('Nenhum professor do quadro atual foi encontrado.');
                 }
             } catch (err: any) {
                 console.error('Erro ao buscar professores:', err);
@@ -130,7 +134,7 @@ const Login = ({ onLogin }: Props) => {
 
             {/* Versão Final */}
             <div style={{ position: 'fixed', bottom: '10px', right: '10px', fontSize: '0.6rem', color: '#cbd5e1', fontWeight: 600 }}>
-                VERSÃO v4.3.5
+                VERSÃO v5.0.0 - 2º SEMESTRE
             </div>
         </div>
     );
