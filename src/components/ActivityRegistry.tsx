@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, BookOpenCheck, CalendarDays, Check, ChevronRight, LoaderCircle, Save } from 'lucide-react';
+import { ArrowLeft, BookOpenCheck, CalendarDays, Check, ChevronRight, FileText, LoaderCircle, Printer, Save } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import type { Activity, ActivityResult, Teacher } from '../lib/supabase';
 import { getOfficialDisciplines } from '../lib/officialSchedule';
@@ -14,6 +14,7 @@ const today = () => new Intl.DateTimeFormat('en-CA', {
 const ActivityRegistry = ({ teacher, onBack }: Props) => {
     const disciplines = useMemo(() => getOfficialDisciplines(teacher), [teacher]);
     const disciplineNames = useMemo(() => Array.from(new Set(disciplines.map(item => item.name))), [disciplines]);
+    const teacherClasses = useMemo(() => Array.from(new Set(disciplines.map(item => item.grade))), [disciplines]);
     const [discipline, setDiscipline] = useState(disciplineNames.length === 1 ? disciplineNames[0] : '');
     const availableClasses = useMemo(() => Array.from(new Set(disciplines.filter(item => item.name === discipline).map(item => item.grade))), [disciplines, discipline]);
     const [className, setClassName] = useState('');
@@ -26,6 +27,10 @@ const ActivityRegistry = ({ teacher, onBack }: Props) => {
     const [saving, setSaving] = useState(false);
     const [savingResults, setSavingResults] = useState(false);
     const [resultsChanged, setResultsChanged] = useState(false);
+    const [reportMode, setReportMode] = useState(false);
+    const [reportClass, setReportClass] = useState('');
+    const [reportStudent, setReportStudent] = useState('');
+    const [reportResults, setReportResults] = useState<ActivityResult[]>([]);
     const [message, setMessage] = useState('');
 
     useEffect(() => {
@@ -109,6 +114,68 @@ const ActivityRegistry = ({ teacher, onBack }: Props) => {
         }
         setSavingResults(false);
     };
+
+    const loadReport = async () => {
+        if (!reportStudent) return;
+        const activityIds = activities.filter(activity => activity.class_name === reportClass).map(activity => activity.id);
+        if (activityIds.length === 0) { setReportResults([]); return; }
+        setLoading(true); setMessage('');
+        const { data, error } = await supabase.from('ef_activity_results').select('*')
+            .in('activity_id', activityIds).eq('student_name', reportStudent);
+        if (error) setMessage(`Não foi possível gerar o relatório: ${error.message}`);
+        else setReportResults(data || []);
+        setLoading(false);
+    };
+
+    if (reportMode) {
+        const reportActivities = reportResults.map(result => ({
+            result, activity: activities.find(activity => activity.id === result.activity_id)
+        })).filter(item => item.activity).sort((a, b) => (b.activity?.activity_date || '').localeCompare(a.activity?.activity_date || ''));
+        return (
+            <div style={pageStyle} className="activity-report-page">
+                <button onClick={() => { setReportMode(false); setReportResults([]); setReportStudent(''); setMessage(''); }} style={backStyle} className="report-hide-print"><ArrowLeft size={20} /> VOLTAR ÀS ATIVIDADES</button>
+                <main style={{ maxWidth: '720px', width: '100%', margin: '22px auto' }}>
+                    <div style={{ textAlign: 'center', marginBottom: '22px' }}>
+                        <span style={mainIconStyle} className="report-hide-print"><FileText size={34} /></span>
+                        <p style={eyebrowStyle}>{teacher.name}</p>
+                        <h1 style={headingStyle}>Relatório individual de atividades</h1>
+                    </div>
+                    <section style={cardStyle} className="report-hide-print">
+                        <label style={labelStyle}>Turma
+                            <select value={reportClass} onChange={event => { setReportClass(event.target.value); setReportStudent(''); setReportResults([]); }} style={inputStyle}>
+                                <option value="">Selecione a turma</option>
+                                {teacherClasses.map(name => <option key={name} value={name}>{name}</option>)}
+                            </select>
+                        </label>
+                        <label style={labelStyle}>Aluno
+                            <select value={reportStudent} onChange={event => { setReportStudent(event.target.value); setReportResults([]); }} disabled={!reportClass} style={inputStyle}>
+                                <option value="">Selecione o aluno</option>
+                                {getOfficialStudents(reportClass).map(student => <option key={student.id} value={student.name}>{student.name}</option>)}
+                            </select>
+                        </label>
+                        <button onClick={loadReport} disabled={!reportStudent} style={{ ...saveStyle, opacity: reportStudent ? 1 : 0.6 }}><FileText size={20} /> GERAR RELATÓRIO</button>
+                    </section>
+                    {message && <p style={messageStyle}>{message}</p>}
+                    {loading ? <Loading /> : reportStudent && reportResults.length === 0 ? (
+                        <div style={{ ...emptyStyle, marginTop: '20px' }}>Nenhuma atividade encontrada para este aluno.</div>
+                    ) : reportResults.length > 0 && (
+                        <section style={{ marginTop: '24px' }}>
+                            <div style={{ marginBottom: '18px' }}><h2 style={{ color: '#064e3b' }}>{reportStudent}</h2><p style={{ color: '#64748b', marginTop: '5px' }}>{reportClass} · Professor(a): {teacher.name}</p></div>
+                            <div style={{ display: 'grid', gap: '10px' }}>
+                                {reportActivities.map(({ result, activity }) => (
+                                    <div key={result.id} style={studentStyle}>
+                                        <div><strong style={{ color: '#064e3b' }}>{activity?.theme}</strong><p style={{ color: '#64748b', fontSize: '0.82rem', marginTop: '5px' }}>{activity?.discipline} · {new Date(`${activity?.activity_date}T12:00:00`).toLocaleDateString('pt-BR')}</p></div>
+                                        <span style={{ color: result.status === 'realizou' ? '#047857' : '#92400e', fontWeight: 900, textTransform: 'uppercase', fontSize: '0.78rem' }}>{statusLabel(result.status)}</span>
+                                    </div>
+                                ))}
+                            </div>
+                            <button onClick={() => window.print()} style={{ ...saveStyle, marginTop: '18px' }} className="report-hide-print"><Printer size={20} /> IMPRIMIR OU SALVAR EM PDF</button>
+                        </section>
+                    )}
+                </main>
+            </div>
+        );
+    }
 
     if (selectedActivity) return (
         <div style={pageStyle}>
@@ -201,6 +268,9 @@ const ActivityRegistry = ({ teacher, onBack }: Props) => {
                             ))}
                         </div>
                     )}
+                    <button onClick={() => { setReportMode(true); setMessage(''); window.scrollTo({ top: 0, behavior: 'smooth' }); }} style={{ ...saveStyle, marginTop: '22px', background: '#1d4ed8' }}>
+                        <FileText size={20} /> GERAR RELATÓRIO
+                    </button>
                 </section>
             </main>
         </div>
@@ -208,6 +278,7 @@ const ActivityRegistry = ({ teacher, onBack }: Props) => {
 };
 
 const Loading = () => <div style={{ padding: '30px', textAlign: 'center', color: '#64748b' }}><LoaderCircle size={26} /> Carregando...</div>;
+const statusLabel = (status: ActivityResult['status']) => ({ pendente: 'Pendente', realizou: 'Realizou', parcial: 'Parcial', nao_realizou: 'Não fez', faltou: 'Faltou' }[status]);
 const StatusButton = ({ active, onClick, label }: { active: boolean; onClick: () => void; label: string }) => (
     <button onClick={onClick} style={{ border: active ? 'none' : '1px solid #cbd5e1', background: active ? '#059669' : 'white', color: active ? 'white' : '#475569', padding: '8px 10px', borderRadius: '12px', fontWeight: 800, cursor: 'pointer' }}>{active && <Check size={14} style={{ verticalAlign: 'middle', marginRight: '4px' }} />}{label}</button>
 );
