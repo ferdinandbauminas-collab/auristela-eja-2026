@@ -12,7 +12,7 @@ const allGrades = Object.keys(CLASS_STORAGE_MAP);
 const assignments: Record<string, Record<string, string[]>> = {
     'CARLOS AUGUSTO': { 'EDUCAÇÃO FÍSICA': [allGrades[0], allGrades[1], allGrades[2]] },
     'CARMEN SILVIA': { 'LÍNGUA INGLESA': [allGrades[1], allGrades[2]] },
-    'DANIEL MAGALHÃES': { 'FILOSOFIA': [allGrades[0], allGrades[1], allGrades[2], allGrades[3]], 'SOCIOLOGIA': [allGrades[4]] },
+    'DANIEL MAGALHÃES': { 'FILOSOFIA': [allGrades[0], allGrades[1], allGrades[2], allGrades[3]], 'SOCIOLOGIA': [allGrades[3], allGrades[4]] },
     'DENILSON': {
         'SISTEMAS OPERACIONAIS': [allGrades[2]], 'REDES DE COMPUTADORES': [allGrades[4]],
         'BANCO DE DADOS': [allGrades[3], allGrades[4]], 'PROGRAMAÇÃO PARA COMPUTADORES': [allGrades[4]],
