@@ -69,3 +69,16 @@ export interface ActivityResult {
     completed_at?: string | null;
     updated_at: string;
 }
+
+export interface OutOfClassRecord {
+    id: string;
+    student_id: string;
+    student_name: string;
+    class_name: string;
+    location: string;
+    situation: string;
+    notes?: string | null;
+    recorded_by: string;
+    recorded_at: string;
+}
+
