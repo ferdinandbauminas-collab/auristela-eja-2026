@@ -1,23 +1,29 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import type { Teacher } from '../lib/supabase';
-import { GraduationCap, UserCheck, WifiOff } from 'lucide-react';
+import { GraduationCap, LockKeyhole, UserCheck, WifiOff } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import CustomSelect from './CustomSelect';
 import { adaptTeacherForOfficialSchedule, isOfficialTeacher } from '../lib/officialSchedule';
 
 interface Props {
     onLogin: (teacher: Teacher) => void;
+    onCoordinationLogin: () => void;
 }
 
 // --- DATABASE SYNC ---
 // Removendo dados fictícios (Dummy Data) para forçar o uso dos dados reais de 2026
 
-const Login = ({ onLogin }: Props) => {
+const COORDINATION_PASSWORD = 'ejatec2026';
+
+const Login = ({ onLogin, onCoordinationLogin }: Props) => {
     const [teachers, setTeachers] = useState<Teacher[]>([]);
     const [loading, setLoading] = useState(true);
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
     const [isSelectOpen, setIsSelectOpen] = useState(false);
+    const [isCoordinationOpen, setIsCoordinationOpen] = useState(false);
+    const [password, setPassword] = useState('');
+    const [passwordError, setPasswordError] = useState('');
 
     useEffect(() => {
         async function getTeachers() {
@@ -53,6 +59,17 @@ const Login = ({ onLogin }: Props) => {
         if (teacher) {
             onLogin(teacher);
         }
+    };
+
+    const handleCoordinationAccess = () => {
+        if (password !== COORDINATION_PASSWORD) {
+            setPasswordError('Senha incorreta. Tente novamente.');
+            return;
+        }
+        setPassword('');
+        setPasswordError('');
+        setIsCoordinationOpen(false);
+        onCoordinationLogin();
     };
 
     return (
@@ -117,6 +134,21 @@ const Login = ({ onLogin }: Props) => {
                             {errorMsg ? errorMsg : 'Clique aqui para se identificar e iniciar'}
                         </p>
                     </motion.button>
+
+                    <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => setIsCoordinationOpen(true)}
+                        style={{
+                            width: '100%', padding: '24px 20px', borderRadius: '28px', marginTop: '16px',
+                            border: '1px solid rgba(5, 150, 105, .18)', background: 'rgba(255,255,255,.75)', cursor: 'pointer'
+                        }}
+                    >
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '11px' }}>
+                            <LockKeyhole size={23} color="#047857" />
+                            <strong style={{ color: '#064e3b', fontSize: '.95rem', textTransform: 'uppercase' }}>Acesso da Coordenação</strong>
+                        </div>
+                    </motion.button>
                 </motion.div>
 
                 <CustomSelect
@@ -130,6 +162,18 @@ const Login = ({ onLogin }: Props) => {
                     subtitle="Selecione seu nome da lista"
                     showSearch={false}
                 />
+
+                {isCoordinationOpen && <div style={{ position: 'fixed', inset: 0, zIndex: 20, background: 'rgba(6, 78, 59, .45)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '22px' }}>
+                    <div className="glass-card" style={{ width: '100%', maxWidth: '360px', padding: '26px', background: 'white' }}>
+                        <LockKeyhole size={30} color="#047857" />
+                        <h2 style={{ fontSize: '1.25rem', margin: '13px 0 8px' }}>Coordenação</h2>
+                        <p style={{ color: '#64748b', fontSize: '.84rem', marginBottom: '18px' }}>Digite a senha para acessar os registros.</p>
+                        <input type="password" autoFocus value={password} onChange={event => { setPassword(event.target.value); setPasswordError(''); }} onKeyDown={event => { if (event.key === 'Enter') handleCoordinationAccess(); }} placeholder="Senha" className="input-field" />
+                        {passwordError && <p style={{ color: '#dc2626', fontSize: '.78rem', marginTop: '8px' }}>{passwordError}</p>}
+                        <button onClick={handleCoordinationAccess} className="btn-primary" style={{ width: '100%', marginTop: '18px' }}>Entrar</button>
+                        <button onClick={() => { setIsCoordinationOpen(false); setPassword(''); setPasswordError(''); }} style={{ width: '100%', marginTop: '10px', border: 'none', background: 'transparent', color: '#64748b', padding: '10px', cursor: 'pointer' }}>Cancelar</button>
+                    </div>
+                </div>}
             </AnimatePresence>
 
             {/* Versão Final */}
@@ -141,3 +185,4 @@ const Login = ({ onLogin }: Props) => {
 };
 
 export default Login;
+

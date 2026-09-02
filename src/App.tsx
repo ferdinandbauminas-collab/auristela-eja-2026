@@ -7,12 +7,14 @@ import Login from './components/Login';
 import Attendance from './components/Attendance';
 import TeacherHome from './components/TeacherHome';
 import ActivityRegistry from './components/ActivityRegistry';
+import CoordinationRegistry from './components/CoordinationRegistry';
 
 type TeacherView = 'menu' | 'attendance' | 'activities';
 
 const App = () => {
   const [currentTeacher, setCurrentTeacher] = useState<Teacher | null>(null);
   const [teacherView, setTeacherView] = useState<TeacherView>('menu');
+  const [coordinationAccess, setCoordinationAccess] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -34,7 +36,17 @@ const App = () => {
   return (
     <div className="app-container" style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
       <AnimatePresence mode='wait'>
-        {!currentTeacher ? (
+        {coordinationAccess ? (
+          <motion.div
+            key="coordination"
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -30 }}
+            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+          >
+            <CoordinationRegistry onLogout={() => setCoordinationAccess(false)} />
+          </motion.div>
+        ) : !currentTeacher ? (
           <motion.div
             key="login"
             initial={{ opacity: 0, scale: 0.98 }}
@@ -42,7 +54,10 @@ const App = () => {
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.4 }}
           >
-            <Login onLogin={(teacher) => { setCurrentTeacher(teacher); setTeacherView('menu'); }} />
+            <Login
+              onLogin={(teacher) => { setCurrentTeacher(teacher); setTeacherView('menu'); }}
+              onCoordinationLogin={() => setCoordinationAccess(true)}
+            />
           </motion.div>
         ) : (
           <motion.div
@@ -70,3 +85,4 @@ const App = () => {
 };
 
 export default App;
+
