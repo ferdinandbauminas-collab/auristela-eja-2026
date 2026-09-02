@@ -57,6 +57,17 @@ export const getOfficialStudents = (className: string): Student[] =>
         active: true
     }));
 
+export const getAllOfficialStudents = (): Student[] =>
+    Object.entries(namesByClass)
+        .flatMap(([className, names]) => names.map((name, index) => ({
+            id: `official-${className}-${index + 1}`,
+            name,
+            class_id: className,
+            active: true
+        })))
+        .sort((first, second) => first.name.localeCompare(second.name, 'pt-BR'));
+
 export const OFFICIAL_STUDENT_COUNTS = Object.fromEntries(
     Object.entries(namesByClass).map(([className, names]) => [className, names.length])
 );
+
